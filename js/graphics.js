@@ -18,6 +18,7 @@ var Renderer = (function() {
   var COLOUR_BG = "#333";
   var COLOUR_HP_BAR = "#a00";
   var COLOUR_HP_GONE = "#bbb";
+  var COLOUR_HP_TEXT = "#111";
 
   window.addEventListener('resize', resizeCanvas, false);
 
@@ -92,23 +93,38 @@ var Renderer = (function() {
     g.fillRect(0, 0, canvas.width, canvas.height);
 
     // Health bars
-    var max_hp_bar_width = canvas.width/2-10;
+    var max_hp_bar_width = canvas.width/2-20;    
 
     // Player 1 health
     var hp = game.playerLeft.health;
     var w = max_hp_bar_width * (hp/Player.MAX_HEALTH);
     g.beginPath();
-    g.rect(0, 0, w, 20);
+    g.rect(10, 10, w, 40);
     g.fillStyle = COLOUR_HP_BAR;
     g.fill();
+    g.beginPath();
+    g.rect(w + 10, 10, max_hp_bar_width - w, 40);
+    g.fillStyle = COLOUR_HP_GONE;
+    g.fill();
+    g.fillStyle = COLOUR_HP_TEXT;
+    g.font = "30px Arial";
+    g.fillText(hp, canvas.width / 4, 40);
 
     // Player 2 health
-    var hp = game.playerRight.health;
-    var w = max_hp_bar_width * (hp/Player.MAX_HEALTH);
+    hp = game.playerRight.health;
+    w = max_hp_bar_width * (hp/Player.MAX_HEALTH);
     g.beginPath();
-    g.rect(canvas.width - w, 0, w, 20);
+    g.rect(canvas.width - w, 10, w - 10, 40);
     g.fillStyle = COLOUR_HP_BAR;
     g.fill();
+    g.beginPath();
+    g.rect(canvas.width - max_hp_bar_width, 10, max_hp_bar_width - w, 40);
+    g.fillStyle = COLOUR_HP_GONE;
+    g.fill();
+    g.fillStyle = COLOUR_HP_TEXT;
+    g.font = "30px Arial";
+    g.fillText(hp, canvas.width / 4 * 3, 40);
+
 
     var players = [game.playerLeft, game.playerRight];
     for (var pid=0; pid<=1; pid++) {
