@@ -47,7 +47,7 @@ var Player = (function() {
       this.defense = spell;
     } else if (spell === "SHIELD") {
       this.defense = spell;
-    } else  if (spell === "SHIELDBREAKER") {
+    } else if (spell === "SHIELDBREAKER") {
       if (this.opponent.defense === "SHIELD") {
         this.opponent.defense = "NONE";
       } else if (this.opponent.defense === "GREATERSHIELD") {
