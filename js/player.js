@@ -142,9 +142,9 @@ var Player = (function() {
     }
 
     if(this.augmentSpell && (spellDamage !== 0 || spellDamageOverTime !== 0 || spellHeal !== 0)) {
-      spellDamage *= 1.5;
-      spellDamageOverTime *= 1.5;
-      spellHeal *= 1.5;
+      spellDamage = Math.floor(spellDamage * 1.5);
+      spellDamageOverTime = Math.floor(spellDamageOverTime * 1.5);
+      spellHeal = Math.floor(spellHeal * 1.5);
       this.augmentSpell = false;
     }
 

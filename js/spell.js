@@ -1,21 +1,21 @@
 var MAX_SPELL_LENGTH = 10;
 
 var spellList = [
-  {gesture: "BABDZ", name: "FIREBALL", niceName: "Fireball"},
-  {gesture: "EBCY", name: "COUNTERSPELL", niceName: "Counterspell"},
+  {gesture: "BZ", name: "MAGICMISSILE", niceName: "Magic Missile"},
   {gesture: "DAY", name: "SHIELD", niceName: "Shield"},
   {gesture: "BX", name: "SHIELDBREAKER", niceName: "Shield Breaker"},
+  {gesture: "BABDZ", name: "FIREBALL", niceName: "Fireball"},
   {gesture: "DABCX", name: "GREATERSHIELD", niceName: "Greater Shield"},
-  {gesture: "CDEX", name: "HEAL", niceName: "Heal"},
-  {gesture: "BZ", name: "MAGICMISSILE", niceName: "Magic Missile"},
-  {gesture: "DCY", name: "DODGE", niceName: "Dodge"},
-  {gesture: "BCAY", name: "SILENCE", niceName: "Silence"},
   {gesture: "BCZ", name: "POISON", niceName: "Poison"},
-  {gesture: "AEX", name: "DYNAMITE", niceName: "Dynamite"},
+  {gesture: "CDEX", name: "HEAL", niceName: "Heal"},
+  {gesture: "DX", name: "AUGMENT", niceName: "Augment"},
+  {gesture: "EBCY", name: "COUNTERSPELL", niceName: "Counterspell"},
+  {gesture: "DCY", name: "DODGE", niceName: "Dodge"},
   {gesture: "BABDBAY", name: "PYROBLAST", niceName: "Pyroblast"},
   {gesture: "CBEX", name: "VAMPIRICBLAST", niceName: "Vampiric Blast"},
-  {gesture: "DX", name: "AUGMENT", niceName: "Augment"},
+  {gesture: "AEX", name: "DYNAMITE", niceName: "Dynamite"},
   {gesture: "DECAY", name: "MIRROR", niceName: "Mirror"},
+  {gesture: "BCAY", name: "SILENCE", niceName: "Silence"},
   {gesture: "EBEZ", name: "EXODIA", niceName: "Exodia"}
 ];
 

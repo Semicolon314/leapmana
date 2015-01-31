@@ -121,9 +121,9 @@ var Gesture = (function() {
       }
       var stopPoints = 0;
       if(heightDistance > 0) {
-        stopPoints += heightDistance / 30;
+        stopPoints += heightDistance / 35;
       }
-      stopPoints += Math.min(0.5, (hand.palmPosition[1] - averagePosition[1]) / 35);
+      stopPoints += Math.min(0.5, (hand.palmPosition[1] - averagePosition[1]) / 40);
       if(stopPoints > 1.0) {
         return "STOP";
       }
