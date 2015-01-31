@@ -1,7 +1,7 @@
-MAX_SPELL_LENGTH = 10;
+var MAX_SPELL_LENGTH = 10;
 
 
-function spellcheck(gestures) {
+function spellCheck(gestures) {
 	
 	var moveMap = {
 		names: ["NONE", "THUMB", "FLIP", "PRESS", "STOP", "SPOCK", "FIST", "POINT", "DOUBLE"],
@@ -24,15 +24,31 @@ function spellcheck(gestures) {
 
 	var spellMap =  {
 		gestures: ["BABDZ", "EBCY", "DAY", "BX", "DABCX", "CDEX", "BZ", "DCY", "BCAY", "BCZ", "AEX", "BABDBAY", "CBEX", "DX", "DECAY", "EBEZ"],
-		spellname: ["FIREBALL", "COUNTERSPELL", "SHIELD", "SHIELDBREAKER", "GREATER SHIELD", "HEAL", "MAGICMISSLE", "DODGE", "SILENCE", "POISON", "DYNAMITE", "PYROBLAST", "VAMPIRICBLAST", "AUGMENT", "MIRROR", "EXODIE"]
+		spellName: ["FIREBALL", "COUNTERSPELL", "SHIELD", "SHIELDBREAKER", "GREATER SHIELD", "HEAL", "MAGICMISSLE", "DODGE", "SILENCE", "POISON", "DYNAMITE", "PYROBLAST", "VAMPIRICBLAST", "AUGMENT", "MIRROR", "EXODIE"]
 	}
 
 	var substring;
 	for (var k = cast.length - 2; k >= 0; k--) {
 		substring = cast.substring(k, cast.length);
 		for (var l = 0; l < spellMap.gestures.length; l++) {
-			if (spellMap.gestures[l] === substring) return spellMap.spellname[l];
+			if (spellMap.gestures[l] === substring) return spellMap.spellName[l];
 		}
 	}
 	return "NONE";
 }
+
+
+function spellLength(spellName) {
+	var spellMap =  {
+		gestures: ["BABDZ", "EBCY", "DAY", "BX", "DABCX", "CDEX", "BZ", "DCY", "BCAY", "BCZ", "AEX", "BABDBAY", "CBEX", "DX", "DECAY", "EBEZ"],
+		spellName: ["FIREBALL", "COUNTERSPELL", "SHIELD", "SHIELDBREAKER", "GREATER SHIELD", "HEAL", "MAGICMISSLE", "DODGE", "SILENCE", "POISON", "DYNAMITE", "PYROBLAST", "VAMPIRICBLAST", "AUGMENT", "MIRROR", "EXODIE"]
+	}
+
+	for (var l = 0; l < spellMap.gestures.length; l++) {
+		if (spellMap.spellName[l] === ) return spellMap.gestures[l].length;
+	}
+
+	return -1;
+}
+
+
