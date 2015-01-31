@@ -14,7 +14,7 @@ var Game = (function() {
 
     if(frame.hands.length === 2) {
       frame.hands.sort(function(a, b) {
-        return a.position[0] - b.position[0];
+        return a.palmPosition[0] - b.palmPosition[0];
       });
       this.playerLeft.gesture.handFrame(frame.hands[0]);
       this.playerRight.gesture.handFrame(frame.hands[1]);
