@@ -8,27 +8,10 @@ var Player = (function() {
     this.position = position;
     this.defense = "NONE"; // active defense (only one at a time)
     this.gestureHistory = [];
-    this.gestureHistoryClearTimeout = null;
     this.health = MAX_HEALTH;
     this.gesture = new Gesture(function(g) {
       console.log(g);
       if(new Date().getTime() - _this.silenced > 2000) {
-        if (_this.gestureHistory.length > 0) {
-          clearTimeout(_this.gestureHistoryClearTimeout);
-          // Clear the history if the user gestures *after*
-          // finishing a spell.
-          var last_g = _this.gestureHistory[_this.gestureHistory.length-1].type;
-          if (last_g === "FIST" || last_g === "POINT" || last_g === "DOUBLE") {
-            _this.gestureHistory = [];
-          }
-        }
-        // Clear the history if the user finishes casting a spell, then
-        // waits.
-        if (g === "FIST" || g === "POINT" || g === "DOUBLE") {
-          _this.gestureHistoryClearTimeout = setTimeout(function() {
-            _this.gestureHistory = [];
-          }, 500);
-        }
         _this.gestureHistory.push({type: g, timestamp: new Date().getTime()});
         _this.castSpells(_this.getHistory());
       }
@@ -59,7 +42,7 @@ var Player = (function() {
       return;
 
     //Spellstats, calculated at the end of the if statement chain
-    var spellDamage = 0, spellHeal = 0, spellDamageOverTime = 0, spellDelay = 0;
+    var spellDamage = 0, spellHeal = 0, spellDamageOverTime = 0;
     var spellChars = spellLength(spell);
     var spellOffensive = false;
     var effect = null;
@@ -69,7 +52,6 @@ var Player = (function() {
     if (spell === "FIREBALL") {
       spellDamage = 7;
       spellOffensive = true; // can be blocked by shields
-      spellDelay = 500;
     } else if (spell === "COUNTERSPELL") {
       effect = function() {
         _this.defense = spell;
@@ -92,11 +74,10 @@ var Player = (function() {
       };
     } else if (spell === "HEAL") {
       this.damageOverTime = 0;
-      spellHeal = 4;
+      spellHeal = 3;
     } else if (spell === "MAGICMISSILE") {
-      spellDamage = 1;
+      spellDamage = 2;
       spellOffensive = true;
-      spellDelay = 500;
     } else if (spell === "DODGE") {
       this.defense = spell;
     } else if (spell === "SILENCE") {
@@ -106,9 +87,8 @@ var Player = (function() {
       };
       spellOffensive = true;
     } else if (spell === "POISON") {
-      spellDamageOverTime = 4;
+      spellDamageOverTime = 5;
       spellOffensive = true;
-      spellDelay = 500;
     } else if (spell === "DYNAMITE") {
       spellDamage = 4;
       spellHeal = -4;
@@ -116,7 +96,6 @@ var Player = (function() {
     } else if (spell === "PYROBLAST") {
       spellDamage = 10;
       spellOffensive = true;
-      spellDelay = 1000;
     } else if (spell === "VAMPIRICBLAST") {
       spellDamage = 3;
       spellHeal = 2;
@@ -130,71 +109,69 @@ var Player = (function() {
         _this.defense = spell;
       };
     } else if (spell === "EXODIA") {
-      effect = function() {
-        _this.exodiaCount ++;
-        if (_this.exodiaCount >= 5) {
-          _this.opponent.defense = "NONE";
-          _this.opponent.health = -9001;
-        }
+      this.exodiaCount ++;
+      if (exodiaCount >= 5) {
+        this.opponent.defense = "NONE";
+        this.opponent.health = -9001;
       }
     } else {
       console.log("Invalid spell was casted: " + spell); //For good measure and debugging
     }
 
     if(this.augmentSpell && (spellDamage !== 0 || spellDamageOverTime !== 0 || spellHeal !== 0)) {
-      spellDamage = Math.floor(spellDamage * 1.5);
-      spellDamageOverTime = Math.floor(spellDamageOverTime * 1.5);
-      spellHeal = Math.floor(spellHeal * 1.5);
+      spellDamage *= 1.5;
+      spellDamageOverTime *= 1.5;
+      spellHeal *= 1.5;
       this.augmentSpell = false;
     }
 
     //Actual logic starts here
-
-    setTimeout(function () {
-      var blocked = false;
-      if (_this.opponent.defense === "COUNTERSPELL" && spell !== "PYROBLAST") {
-        blocked = true;
-        _this.opponent.defense = "NONE";
-      }
-      if (spellOffensive) {
-        if (_this.opponent.defense === "GREATERSHIELD" || _this.opponent.defense === "GREATERSHIELDBROKEN"){
-          if (spell !== "SHIELDBREAKER") {
-            blocked = true;
-          }
-        }
-        if (_this.opponent.defense === "SHIELD" && spell !== "SHIELDBREAKER") {
-          if(spellChars < 4) {
-            blocked = true;
-          } else {
-            _this.opponent.defense = "NONE";
-          }
-        }
-        if (_this.opponent.defense === "MIRROR") {
-          if(spellChars < 4) {
-            blocked = true;
-            _this.opponent.castSpells(spell);
-          }
-          _this.opponent.defense = "NONE";
-        }
-        if (_this.opponent.defense === "DODGE" && spell !== "PYROBLAST") {
+    var blocked = false;
+    if (this.opponent.defense === "COUNTERSPELL" && spell !== "PYROBLAST") {
+      blocked = true;
+      this.opponent.defense = "NONE";
+    }
+    if (spellOffensive) {
+      if (this.opponent.defense === "GREATERSHIELD" || this.opponent.defense === "GREATERSHIELDBROKEN"){
+        if (spell !== "SHIELDBREAKER") {
           blocked = true;
-          _this.opponent.defense = "NONE";
         }
       }
-      if (spellHeal > 0 || (_this.defense !== "SHIELD" && _this.defense !== "GREATERSHIELD" && _this.defense !== "GREATERSHIELDBROKEN")) {
-        _this.health += spellHeal;
-        if(_this.health > MAX_HEALTH) {
-          _this.health = MAX_HEALTH;
+      if (this.opponent.defense === "SHIELD" && spell !== "SHIELDBREAKER") {
+        if(spellChars < 4) {
+          blocked = true;
+        } else {
+          this.opponent.defense = "NONE";
         }
       }
-      if (!blocked) {
-        _this.opponent.health -= spellDamage;
-        _this.opponent.damageOverTime += spellDamageOverTime;
-        if(effect !== null) {
-          effect();
+      if (this.opponent.defense === "MIRROR") {
+        if(spellChars < 4) {
+          blocked = true;
+          this.opponent.castSpells(spell);
         }
+        this.opponent.defense = "NONE";
       }
-    }, spellDelay);
+      if (this.opponent.defense === "DODGE" && spell !== "PYROBLAST") {
+        blocked = true;
+        this.opponent.defense = "NONE";
+      }
+    }
+    if (spellHeal > 0 || (this.defense !== "SHIELD" && this.defense !== "GREATERSHIELD" && this.defense !== "GREATERSHIELDBROKEN")) {
+      this.health += spellHeal;
+      if(this.health > MAX_HEALTH) {
+        this.health = MAX_HEALTH;
+      }
+    }
+    if (!blocked) {
+      this.opponent.health -= spellDamage;
+      this.opponent.damageOverTime += spellDamageOverTime;
+      if(effect !== null) {
+        console.log("Casting effect!");
+        effect();
+      }
+    }
+    this.frameUpdate();
+    this.opponent.frameUpdate();
   };
 
   Player.prototype.frameUpdate = function() {
@@ -206,6 +183,10 @@ var Player = (function() {
         this.damageOverTimeFrame = DOT_FRAMES;
       }
     }
+
+    if (this.health < 0 && this.health > -1000) {
+        this.health = 0;
+    } 
   }
 
   // Gets rid of spells and gestures older than 20 seconds
