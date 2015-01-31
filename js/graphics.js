@@ -2,6 +2,17 @@ var Renderer = (function() {
   var canvas = null;
   var game = null;
   var spells = [];
+  var gestureIcons;
+  var gestureIconData = {
+    "SPOCK": {row: 0, col: 0},
+    "FLIP": {row: 0, col: 1},
+    "POINT": {row: 0, col: 2},
+    "DOUBLE": {row: 0, col: 3},
+    "STOP": {row: 1, col: 0},
+    "PRESS": {row: 1, col: 1},
+    "THUMB": {row: 1, col: 2},
+    "FIST": {row: 1, col: 3},
+  };
 
   // colours
   var COLOUR_BG = "#333";
@@ -111,15 +122,18 @@ var Renderer = (function() {
       var spelly = 300;
 
       // Log of recent gestures
-      var str = "";
+      var drawPos = 20 + xofs;
       p.gestureHistory.forEach (function (gesture, i) {
-        if (i+1 >= p.gestureHistory.length) {
-          str += gesture.type + " ";
+        if (i+7 >= p.gestureHistory.length) {
+          var data = gestureIconData[gesture.type];
+          //console.log(gesture + ": " + JSON.stringify(data));
+          g.drawImage(gestureIcons, data.col * 200, data.row * 200, 200, 200, drawPos, 60, 50, 50);
+          drawPos += 60;
         }
       });
       g.font = "24px sans";
       g.fillStyle = "#ff0";
-      g.fillText(str, 20+xofs, 60);
+      //g.fillText(str, 20+xofs, 60);
 
       // Spells
       var str = "";
@@ -156,10 +170,15 @@ var Renderer = (function() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
   }
+  function preloadImages() {
+    gestureIcons = new Image();
+    gestureIcons.src = "images/gestureIcons.png";
+  }
   function initGraphics(g) {
     // Called when the document is loaded.
     canvas = document.getElementById('game_canvas');
     game = g;
+    preloadImages();
     resizeCanvas();
     setInterval(render, 17);
   }
