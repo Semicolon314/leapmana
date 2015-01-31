@@ -14,6 +14,9 @@ var Player = (function() {
       if(new Date().getTime() - _this.silenced > 2000) {
         _this.gestureHistory.push({type: g, timestamp: new Date().getTime()});
         _this.castSpells(_this.getHistory());
+        if(g === "FIST" || g === "POINT" || g === "DOUBLE") {
+          _this.gestureHistory = [];
+        }
       }
     }, position);
     this.spellHistory = [];
@@ -166,7 +169,6 @@ var Player = (function() {
       this.opponent.health -= spellDamage;
       this.opponent.damageOverTime += spellDamageOverTime;
       if(effect !== null) {
-        console.log("Casting effect!");
         effect();
       }
     }

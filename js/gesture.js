@@ -11,14 +11,14 @@ var USE_KEYS = true;
 var Gesture = (function() {
   var THRESHOLD = 10; // required consecutive frames for a gesture to be valid
   var THRESH = {
-    "THUMB": 10,
-    "FIST": 10,
-    "POINT": 10,
-    "DOUBLE": 10,
+    "THUMB": 6,
+    "FIST": 6,
+    "POINT": 5,
+    "DOUBLE": 5,
     "FLIP": 5,
     "SPOCK": 15,
-    "PRESS": 5,
-    "STOP": 5
+    "PRESS": 3,
+    "STOP": 3
   };
 
   var KEYS = {
@@ -52,7 +52,7 @@ var Gesture = (function() {
     this.currentGesture = "NONE";
     this.currentFrames = 0;
     this.player = player; // "LEFT" or "RIGHT"
-    this.heightHistory = [];
+    this.positionHistory = [];
 
     if(USE_KEYS) {
       $(window).keydown(function(event) {
@@ -68,43 +68,63 @@ var Gesture = (function() {
 
   // Detects a gesture at an instantaneous moment in time
   Gesture.prototype.instantGesture = function(hand) {
+    var _this = this;
+
     if(hand.confidence < 0.3)
       return; // too bad
 
-    this.heightHistory.push(hand.middleFinger.distal.center()[1]);
-    if(this.heightHistory.length > 200) {
-      this.heightHistory.shift();
+    this.positionHistory.push(hand.palmPosition);
+    if(this.positionHistory.length > 200) {
+      this.positionHistory.shift();
     }
-    var averageHeight = this.heightHistory.reduce(function(a, b) { return a + b }) / this.heightHistory.length;
+    var averagePosition = this.positionHistory.reduce(function(a, b) {
+      return [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+    }).map(function(a) {
+      return a / _this.positionHistory.length;
+    });
     var heightDistance = hand.middleFinger.distal.center()[1] - hand.arm.nextJoint[1];
-    var heightDistance2 = hand.palmPosition[1] - hand.arm.nextJoint[1];
 
     var fA = hand.indexFinger.extended;
     var fB = hand.middleFinger.extended;
     var fC = hand.ringFinger.extended;
     var fD = hand.ringFinger.extended;
+    var thumbDist = Leap.vec3.dist(hand.thumb.distal.center(), hand.indexFinger.proximal.center());
+
+    //$("#curGesture").html(fA + "\t" + fB + "\t" + fC + "\t" + fD + "\t" + thumbDist);
+
     if(!fA && !fB && !fC && !fD) { // FIST and THUMB
-      if(hand.thumb.extended) {
+      if(thumbDist > 45) {
         return "THUMB";
-      } else {
+      } else if(thumbDist < 35) {
         return "FIST";
       }
     }
-    if(fA && !fB && !fC && !fD) { // POINT
-      return "POINT";
+    var pointPoints = 0;
+    if(fA && !fC && !fD) { // POINT and DOUBLE
+      if(!fB) {
+        return "POINT";
+      } else {
+        return "DOUBLE";
+      }
     }
-    if(fA && fB && !fC && !fD) { // DOUBLE
-      return "DOUBLE";
-    // Detect FLIP, PRESS, STOP, SPOCK, and NONE
-    }
-    if(hand.indexFinger.extended && hand.middleFinger.extended && hand.ringFinger.extended && hand.pinky.extended) {
+    if(fA && fB && fC && fD) { // FLIP, PRESS, STOP, SPOCK
       if(hand.palmNormal[1] > 0.2) {
         return "FLIP";
       }
-      if(/*hand.palmNormal[2] > 0.2 && */heightDistance < -35) {
+      var pressPoints = 0;
+      if(heightDistance < 0) {
+        pressPoints += heightDistance / -35;
+      }
+      pressPoints += (hand.palmPosition[1] - averagePosition[1]) / -40;
+      if(pressPoints > 1.0) {
         return "PRESS";
       }
-      if(/*hand.palmNormal[2] < -0.2 && */heightDistance > 25) {
+      var stopPoints = 0;
+      if(heightDistance > 0) {
+        stopPoints += heightDistance / 30;
+      }
+      stopPoints += (hand.palmPosition[1] - averagePosition[1]) / 35;
+      if(stopPoints > 1.0) {
         return "STOP";
       }
       var dA = Leap.vec3.dist(hand.indexFinger.distal.center(), hand.middleFinger.distal.center());
