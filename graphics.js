@@ -5,13 +5,13 @@
   function render() {
     // Called every frame to render graphics.
     var g = canvas.getContext('2d');
-    g.rect(20, 20, 30, 30);
-    g.fillStyle = "red";
+    g.rect(0, 0, canvas.width, canvas.height);
+    g.fillStyle = "#333";
     g.fill();
   }
   function resizeCanvas() {
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.height = window.innerHeight-50;
   }
   function initGraphics() {
     canvas = document.getElementById('game_canvas');
