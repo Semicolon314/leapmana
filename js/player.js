@@ -129,10 +129,12 @@ var Player = (function() {
         _this.defense = spell;
       };
     } else if (spell === "EXODIA") {
-      this.exodiaCount ++;
-      if (exodiaCount >= 5) {
-        this.opponent.defense = "NONE";
-        this.opponent.health = -9001;
+      effect = function() {
+        _this.exodiaCount ++;
+        if (_this.exodiaCount >= 5) {
+          _this.opponent.defense = "NONE";
+          _this.opponent.health = -9001;
+        }
       }
     } else {
       console.log("Invalid spell was casted: " + spell); //For good measure and debugging
