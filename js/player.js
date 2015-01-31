@@ -11,8 +11,10 @@ var Player = (function() {
     this.health = MAX_HEALTH;
     this.gesture = new Gesture(function(g) {
       console.log(g);
-      _this.gestureHistory.push({type: g, timestamp: new Date().getTime()});
-      _this.castSpells(_this.getHistory());
+      if(new Date().getTime() - _this.silenced > 2000) {
+        _this.gestureHistory.push({type: g, timestamp: new Date().getTime()});
+        _this.castSpells(_this.getHistory());
+      }
     }, position);
     this.spellHistory = [];
     this.damageOverTime = 0; // current damage remaining to be dealt over time
@@ -53,7 +55,9 @@ var Player = (function() {
         this.opponent.defense = "NONE";
       } else if (this.opponent.defense === "GREATERSHIELD") {
         this.opponent.defense = "GREATERSHIELDBROKEN";
-      } else if (this.opponent.defense === "GREATERSHIELDBROKEN") this.opponent.defense = "NONE";
+      } else if (this.opponent.defense === "GREATERSHIELDBROKEN") {
+        this.opponent.defense = "NONE";
+      }
     } else if (spell === "GREATERSHIELD") {
       this.defense = spell;
     } else if (spell === "HEAL") {
@@ -65,7 +69,7 @@ var Player = (function() {
       this.defense = spell;
     } else if (spell === "SILENCE") {
       //Dunno if we should make him invunerable with certain defense
-      this.opponent.silenced = Date().getTime();
+      this.opponent.silenced = new Date().getTime();
     }else if (spell === "POISON") {
       spellDamageOverTime = 1;
     } else if (spell === "DYNAMITE") {
@@ -89,13 +93,12 @@ var Player = (function() {
     } else console.log("Invalid spell was casted: " + spell); //For good measure and debugging
 
     //Actual logic starts here
-    if (spellHeal > 0 || (this.defense != "SHIELD" && this.defense != "GREATERSHIELD")) this.heatlh += spellHeal;
     if (this.opponent.defense === "DODGE") {
       spellDamage = 0;
       this.opponent.defense = "NONE";
     }
     if (spellDamage > 0) {
-      if (this.opponent.defense === "GREATERSHIELD"){
+      if (this.opponent.defense === "GREATERSHIELD" || this.opponent.defense === "GREATERSHIELDBROKEN"){
         spellDamage = 0;
       }
       if (this.opponent.defense === "SHIELD" && spellChars < 4) {
@@ -107,12 +110,16 @@ var Player = (function() {
       }
       if (this.opponent.defense === "COUNTERSPELL") {
         spellDamage = 0;
+        spellHeal = 0;
         this.opponent.defense = "NONE";
       }
       if (this.opponent.defense === "DODGE") {
         spellDamage = 0;
       }
       this.opponent.health -= spellDamage;
+    }
+    if (spellHeal > 0 || (this.defense !== "SHIELD" && this.defense !== "GREATERSHIELD" && this.defense !== "GREATERSHIELDBROKEN")) {
+      this.heatlh += spellHeal;
     }
 
 

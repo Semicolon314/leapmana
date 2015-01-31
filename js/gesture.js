@@ -11,14 +11,14 @@ var USE_KEYS = true;
 var Gesture = (function() {
   var THRESHOLD = 10; // required consecutive frames for a gesture to be valid
   var THRESH = {
-    "THUMB": 15,
-    "FIST": 15,
+    "THUMB": 10,
+    "FIST": 10,
     "POINT": 10,
     "DOUBLE": 10,
     "FLIP": 5,
     "SPOCK": 15,
-    "PRESS": 10,
-    "STOP": 10
+    "PRESS": 5,
+    "STOP": 5
   };
 
   var KEYS = {
@@ -52,6 +52,7 @@ var Gesture = (function() {
     this.currentGesture = "NONE";
     this.currentFrames = 0;
     this.player = player; // "LEFT" or "RIGHT"
+    this.heightHistory = [];
 
     if(USE_KEYS) {
       $(window).keydown(function(event) {
@@ -66,9 +67,17 @@ var Gesture = (function() {
   };
 
   // Detects a gesture at an instantaneous moment in time
-  function instantGesture(hand) {
+  Gesture.prototype.instantGesture = function(hand) {
     if(hand.confidence < 0.5)
       return; // too bad
+
+    this.heightHistory.push(hand.middleFinger.distal.center()[1]);
+    if(this.heightHistory.length > 200) {
+      this.heightHistory.shift();
+    }
+    var averageHeight = this.heightHistory.reduce(function(a, b) { return a + b }) / this.heightHistory.length;
+    var heightDistance = hand.middleFinger.distal.center()[1] - hand.arm.nextJoint[1];
+    var heightDistance2 = hand.palmPosition[1] - hand.arm.nextJoint[1];
 
     var fA = hand.indexFinger.extended;
     var fB = hand.middleFinger.extended;
@@ -92,16 +101,16 @@ var Gesture = (function() {
       if(hand.palmNormal[1] > 0.2) {
         return "FLIP";
       }
-      if(hand.palmNormal[2] > 0.4) {
+      if(/*hand.palmNormal[2] > 0.2 && */heightDistance < -45) {
         return "PRESS";
       }
-      if(hand.palmNormal[2] < -0.4) {
+      if(/*hand.palmNormal[2] < -0.2 && */heightDistance > 25) {
         return "STOP";
       }
       var dA = Leap.vec3.dist(hand.indexFinger.distal.center(), hand.middleFinger.distal.center());
       var dB = Leap.vec3.dist(hand.middleFinger.distal.center(), hand.ringFinger.distal.center());
       var dC = Leap.vec3.dist(hand.ringFinger.medial.center(), hand.pinky.distal.center());
-      if(dA < 25 && dB > 25 && dC < 25) {
+      if(dA < 25 && dB > 35 && dC < 25) {
         return "SPOCK";
       }
     }
@@ -109,7 +118,7 @@ var Gesture = (function() {
   }
 
   Gesture.prototype.handFrame = function(hand) {
-    var g = instantGesture(hand);
+    var g = this.instantGesture(hand);
     if(g === "NONE") {
       return; // Don't do anything, don't reset current gesture
     }
