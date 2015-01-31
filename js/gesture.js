@@ -13,10 +13,10 @@ var Gesture = (function() {
   var THRESH = {
     "THUMB": 6,
     "FIST": 6,
-    "POINT": 5,
-    "DOUBLE": 5,
+    "POINT": 6,
+    "DOUBLE": 6,
     "FLIP": 5,
-    "SPOCK": 15,
+    "SPOCK": 10,
     "PRESS": 3,
     "STOP": 3
   };
@@ -115,7 +115,7 @@ var Gesture = (function() {
       if(heightDistance < 0) {
         pressPoints += heightDistance / -35;
       }
-      pressPoints += (hand.palmPosition[1] - averagePosition[1]) / -40;
+      pressPoints += Math.max(-0.5, (hand.palmPosition[1] - averagePosition[1]) / -40);
       if(pressPoints > 1.0) {
         return "PRESS";
       }
@@ -123,7 +123,7 @@ var Gesture = (function() {
       if(heightDistance > 0) {
         stopPoints += heightDistance / 30;
       }
-      stopPoints += (hand.palmPosition[1] - averagePosition[1]) / 35;
+      stopPoints += Math.min(0.5, (hand.palmPosition[1] - averagePosition[1]) / 35);
       if(stopPoints > 1.0) {
         return "STOP";
       }

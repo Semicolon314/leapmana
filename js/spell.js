@@ -1,23 +1,53 @@
 var MAX_SPELL_LENGTH = 10;
 
-var spellMap =  {
-	gestures: ["BABDZ", "EBCY", "DAY", "BX", "DABCX", "CDEX", "BZ", "DCY", "BCAY", "BCZ", "AEX", "BABDBAY", "CBEX", "DX", "DECAY", "EBEZ"],
-	spellName: ["FIREBALL", "COUNTERSPELL", "SHIELD", "SHIELDBREAKER", "GREATERSHIELD", "HEAL", "MAGICMISSILE", "DODGE", "SILENCE", "POISON", "DYNAMITE", "PYROBLAST", "VAMPIRICBLAST", "AUGMENT", "MIRROR", "EXODIA"]
-}
+var spellList = [
+  {gesture: "BABDZ", name: "FIREBALL", niceName: "Fireball"},
+  {gesture: "EBCY", name: "COUNTERSPELL", niceName: "Counterspell"},
+  {gesture: "DAY", name: "SHIELD", niceName: "Shield"},
+  {gesture: "BX", name: "SHIELDBREAKER", niceName: "Shield Breaker"},
+  {gesture: "DABCX", name: "GREATERSHIELD", niceName: "Greater Shield"},
+  {gesture: "CDEX", name: "HEAL", niceName: "Heal"},
+  {gesture: "BZ", name: "MAGICMISSILE", niceName: "Magic Missile"},
+  {gesture: "DCY", name: "DODGE", niceName: "Dodge"},
+  {gesture: "BCAY", name: "SILENCE", niceName: "Silence"},
+  {gesture: "BCZ", name: "POISON", niceName: "Poison"},
+  {gesture: "AEX", name: "DYNAMITE", niceName: "Dynamite"},
+  {gesture: "BABDBAY", name: "PYROBLAST", niceName: "Pyroblast"},
+  {gesture: "CBEX", name: "VAMPIRICBLAST", niceName: "Vampiric Blast"},
+  {gesture: "DX", name: "AUGMENT", niceName: "Augment"},
+  {gesture: "DECAY", name: "MIRROR", niceName: "Mirror"},
+  {gesture: "EBEZ", name: "EXODIA", niceName: "Exodia"}
+];
+
+var gestureLetterMap = {
+	"A": "THUMB",
+	"B": "FLIP",
+	"C": "PRESS",
+	"D": "STOP",
+	"E": "SPOCK",
+	"X": "FIST",
+	"Y": "POINT",
+	"Z": "DOUBLE"
+};
 
 function spellCheck(gestures) {
 	var moveMap = {
-		names: ["NONE", "THUMB", "FLIP", "PRESS", "STOP", "SPOCK", "FIST", "POINT", "DOUBLE"],
-		letters: ["0", "A", "B", "C", "D", "E", "X", "Y", "Z"]
-	}
+		"NONE": "0",
+		"THUMB": "A",
+		"FLIP": "B",
+		"PRESS": "C",
+		"STOP": "D",
+		"SPOCK": "E",
+		"FIST": "X",
+		"POINT": "Y",
+		"DOUBLE": "Z"
+	};
 
 	//Variable for storing the spell in letter mode
 	var cast = "";
 
 	for (var i = 0; i < gestures.length; i++) {
-		for (var j = 0; j < moveMap.names.length; j++) {
-			if (gestures[i] === moveMap.names[j]) cast += moveMap.letters[j];
-		}
+		cast += moveMap[gestures[i]];
 	}
 
 	//This is really sketchy and looks pretty ugly, fhasdjfhjkasdhflhjqfsdjahfaks
@@ -28,16 +58,16 @@ function spellCheck(gestures) {
 	var substring;
 	for (var k = cast.length - 2; k >= 0; k--) {
 		substring = cast.substring(k, cast.length);
-		for (var l = 0; l < spellMap.gestures.length; l++) {
-			if (spellMap.gestures[l] === substring) return spellMap.spellName[l];
+		for (var l = 0; l < spellList.length; l++) {
+			if (spellList[l].gesture === substring) return spellList[l].name;
 		}
 	}
 	return "NONE";
 }
 
 function spellLength(spellName) {
-	for (var l = 0; l < spellMap.gestures.length; l++) {
-		if (spellMap.spellName[l] === spellName) return spellMap.gestures[l].length;
+	for (var l = 0; l < spellList.length; l++) {
+		if (spellList[l].name === spellName) return spellList[l].gesture.length;
 	}
 
 	return -1;

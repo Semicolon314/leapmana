@@ -63,6 +63,11 @@ var Renderer = (function() {
     }
   }
 
+  function drawGestureIcon(g, gesture, x, y, size) {
+    var data = gestureIconData[gesture];
+    g.drawImage(gestureIcons, data.col * 200, data.row * 200, 200, 200, x, y, size, size);
+  }
+
   function render() {
     // Called every frame to render graphics.
     var g = canvas.getContext('2d');
@@ -72,6 +77,19 @@ var Renderer = (function() {
     g.rect(0, 0, canvas.width, canvas.height);
     g.fillStyle = COLOUR_BG;
     g.fill();
+
+    // Draw the spell legend
+    g.fillStyle = "#fff";
+    g.font = "24px sans";
+    for(var i = 0; i < spellList.length; i++) {
+      var textWidth = g.measureText(spellList[i].niceName).width;
+      g.fillText(spellList[i].niceName, canvas.width / 2 - 5 - textWidth, i * 35 + 132);
+      for(var j = 0; j < spellList[i].gesture.length; j++) {
+        drawGestureIcon(g, gestureLetterMap[spellList[i].gesture[j]], Math.floor(canvas.width / 2 + 5 + j * 35), i * 35 + 110, 30);
+      }
+    }
+    g.fillStyle = "rgba(51, 51, 51, 0.4)";
+    g.fillRect(0, 0, canvas.width, canvas.height);
 
     // Health bars
     var max_hp_bar_width = canvas.width/2-10;
@@ -109,9 +127,7 @@ var Renderer = (function() {
       var drawPos = 20 + xofs;
       p.gestureHistory.forEach (function (gesture, i) {
         if (i+7 >= p.gestureHistory.length) {
-          var data = gestureIconData[gesture.type];
-          //console.log(gesture + ": " + JSON.stringify(data));
-          g.drawImage(gestureIcons, data.col * 200, data.row * 200, 200, 200, drawPos, 60, 50, 50);
+          drawGestureIcon(g, gesture.type, drawPos, 60, 50);
           drawPos += 60;
         }
       });
@@ -156,7 +172,7 @@ var Renderer = (function() {
   }
   function preloadImages() {
     gestureIcons = new Image();
-    gestureIcons.src = "images/gestureIcons.png";
+    gestureIcons.src = "images/gestureIcons.svg";
   }
   function initGraphics(g) {
     // Called when the document is loaded.
