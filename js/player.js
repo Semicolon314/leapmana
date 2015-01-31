@@ -12,14 +12,14 @@ var Player = (function() {
     this.gesture = new Gesture(function(g) {
       console.log(g);
       _this.gestureHistory.push({type: g, timestamp: new Date().getTime()});
-      _this.castSpells();
+      _this.castSpells(_this.getHistory());
     }, position);
     this.spellHistory = [];
     this.damageOverTime = 0; // current damage remaining to be dealt over time
     this.damageOverTimeFrame = 0; // frames left until next DoT
     this.augmentSpell = false; // augment next spell?
     this.silenced = 0; //Player's silenced amount, in time
-    this.exodiaCount = 0; //Number of times player has casted 
+    this.exodiaCount = 0; //Number of times player has casted
     // Spells are in format: {type: "FIREBALL", timestamp: epochtime_number}
   };
 
@@ -38,10 +38,11 @@ var Player = (function() {
     //Spellstats, calculated at the end of the if statement chain
     var spellDamage = 0, spellHeal = 0, spellDamageOverTime = 0;
     var spellChars = spellLength(spell);
-    
-    if (spell !== "NONE") {
+
+    if(spell !== "NONE") {
       this.spellHistory.push({type: spell, timestamp: new Date().getTime()});
-    } else if (spell === "FIREBALL") {
+    }
+    if (spell === "FIREBALL") {
       spellDamage = 7;
     } else if (spell === "COUNTERSPELL") {
       this.defense = spell;
@@ -57,8 +58,8 @@ var Player = (function() {
       this.defense = spell;
     } else if (spell === "HEAL") {
       this.damageOverTime = 0;
-      spellHeal == 3;
-    } else if (spell === "MAGICMISSLE") {
+      spellHeal = 3;
+    } else if (spell === "MAGICMISSILE") {
       spellDamage = 2;
     } else if (spell === "DODGE") {
       this.defense = spell;
@@ -94,8 +95,12 @@ var Player = (function() {
       this.opponent.defense = "NONE";
     }
     if (spellDamage > 0) {
-      if (this.opponent.defense === "GREATERSHIELD") spellDamage = 0;
-      if (this.opponent.defense === "SHIELD" && spellChars < 4) spellDamage = 0;
+      if (this.opponent.defense === "GREATERSHIELD"){
+        spellDamage = 0;
+      }
+      if (this.opponent.defense === "SHIELD" && spellChars < 4) {
+        spellDamage = 0;
+      }
       if (this.opponent.defense === "MIRROR" && spellChars < 4) {
         this.opponent.defense = "NONE";
         this.opponent.castSpells(spell);
@@ -104,8 +109,9 @@ var Player = (function() {
         spellDamage = 0;
         this.opponent.defense = "NONE";
       }
-      if (this.opponent.defense = "DODGE")
-
+      if (this.opponent.defense === "DODGE") {
+        spellDamage = 0;
+      }
       this.opponent.health -= spellDamage;
     }
 
@@ -126,7 +132,7 @@ var Player = (function() {
   // Gets rid of spells and gestures older than 20 seconds
   Player.prototype.pruneHistory = function() {
     var curTime = new Date().getTime();
-    this.gestureHistory = this.gestureHistory.filter(function(gestureObj) { 
+    this.gestureHistory = this.gestureHistory.filter(function(gestureObj) {
       return curTime - gestureObj.timestamp < 20 * 1000;
     });
     this.spellHistory = this.spellHistory.filter(function(spellObj) {
