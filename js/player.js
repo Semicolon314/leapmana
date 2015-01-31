@@ -59,7 +59,7 @@ var Player = (function() {
       return;
 
     //Spellstats, calculated at the end of the if statement chain
-    var spellDamage = 0, spellHeal = 0, spellDamageOverTime = 0;
+    var spellDamage = 0, spellHeal = 0, spellDamageOverTime = 0, spellDelay = 0;
     var spellChars = spellLength(spell);
     var spellOffensive = false;
     var effect = null;
@@ -69,6 +69,7 @@ var Player = (function() {
     if (spell === "FIREBALL") {
       spellDamage = 7;
       spellOffensive = true; // can be blocked by shields
+      spellDelay = 500;
     } else if (spell === "COUNTERSPELL") {
       effect = function() {
         _this.defense = spell;
@@ -95,6 +96,7 @@ var Player = (function() {
     } else if (spell === "MAGICMISSILE") {
       spellDamage = 2;
       spellOffensive = true;
+      spellDelay = 500;
     } else if (spell === "DODGE") {
       this.defense = spell;
     } else if (spell === "SILENCE") {
@@ -106,6 +108,7 @@ var Player = (function() {
     } else if (spell === "POISON") {
       spellDamageOverTime = 5;
       spellOffensive = true;
+      spellDelay = 500;
     } else if (spell === "DYNAMITE") {
       spellDamage = 4;
       spellHeal = -4;
@@ -143,49 +146,52 @@ var Player = (function() {
     }
 
     //Actual logic starts here
-    var blocked = false;
-    if (this.opponent.defense === "COUNTERSPELL" && spell !== "PYROBLAST") {
-      blocked = true;
-      this.opponent.defense = "NONE";
-    }
-    if (spellOffensive) {
-      if (this.opponent.defense === "GREATERSHIELD" || this.opponent.defense === "GREATERSHIELDBROKEN"){
-        if (spell !== "SHIELDBREAKER") {
-          blocked = true;
-        }
-      }
-      if (this.opponent.defense === "SHIELD" && spell !== "SHIELDBREAKER") {
-        if(spellChars < 4) {
-          blocked = true;
-        } else {
-          this.opponent.defense = "NONE";
-        }
-      }
-      if (this.opponent.defense === "MIRROR") {
-        if(spellChars < 4) {
-          blocked = true;
-          this.opponent.castSpells(spell);
-        }
-        this.opponent.defense = "NONE";
-      }
-      if (this.opponent.defense === "DODGE" && spell !== "PYROBLAST") {
+
+    setTimeout(function () {
+      var blocked = false;
+      if (_this.opponent.defense === "COUNTERSPELL" && spell !== "PYROBLAST") {
         blocked = true;
-        this.opponent.defense = "NONE";
+        _this.opponent.defense = "NONE";
       }
-    }
-    if (spellHeal > 0 || (this.defense !== "SHIELD" && this.defense !== "GREATERSHIELD" && this.defense !== "GREATERSHIELDBROKEN")) {
-      this.health += spellHeal;
-      if(this.health > MAX_HEALTH) {
-        this.health = MAX_HEALTH;
+      if (spellOffensive) {
+        if (_this.opponent.defense === "GREATERSHIELD" || _this.opponent.defense === "GREATERSHIELDBROKEN"){
+          if (spell !== "SHIELDBREAKER") {
+            blocked = true;
+          }
+        }
+        if (_this.opponent.defense === "SHIELD" && spell !== "SHIELDBREAKER") {
+          if(spellChars < 4) {
+            blocked = true;
+          } else {
+            _this.opponent.defense = "NONE";
+          }
+        }
+        if (_this.opponent.defense === "MIRROR") {
+          if(spellChars < 4) {
+            blocked = true;
+            _this.opponent.castSpells(spell);
+          }
+          _this.opponent.defense = "NONE";
+        }
+        if (_this.opponent.defense === "DODGE" && spell !== "PYROBLAST") {
+          blocked = true;
+          _this.opponent.defense = "NONE";
+        }
       }
-    }
-    if (!blocked) {
-      this.opponent.health -= spellDamage;
-      this.opponent.damageOverTime += spellDamageOverTime;
-      if(effect !== null) {
-        effect();
+      if (spellHeal > 0 || (_this.defense !== "SHIELD" && _this.defense !== "GREATERSHIELD" && _this.defense !== "GREATERSHIELDBROKEN")) {
+        _this.health += spellHeal;
+        if(_this.health > MAX_HEALTH) {
+          _this.health = MAX_HEALTH;
+        }
       }
-    }
+      if (!blocked) {
+        _this.opponent.health -= spellDamage;
+        _this.opponent.damageOverTime += spellDamageOverTime;
+        if(effect !== null) {
+          effect();
+        }
+      }
+    }, spellDelay);
   };
 
   Player.prototype.frameUpdate = function() {
