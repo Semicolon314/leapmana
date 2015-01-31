@@ -6,4 +6,6 @@ $(document).ready(function() {
   Renderer(game);
 });
 
-Leap.loop(game.handleFrame);
+Leap.loop(function(frame) {
+  game.handleFrame(frame);
+});
