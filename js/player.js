@@ -94,7 +94,7 @@ var Player = (function() {
       this.damageOverTime = 0;
       spellHeal = 3;
     } else if (spell === "MAGICMISSILE") {
-      spellDamage = 2;
+      spellDamage = 1;
       spellOffensive = true;
       spellDelay = 500;
     } else if (spell === "DODGE") {
@@ -116,6 +116,7 @@ var Player = (function() {
     } else if (spell === "PYROBLAST") {
       spellDamage = 10;
       spellOffensive = true;
+      spellDelay = 1000;
     } else if (spell === "VAMPIRICBLAST") {
       spellDamage = 3;
       spellHeal = 2;

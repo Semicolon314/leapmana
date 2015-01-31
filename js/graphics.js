@@ -29,6 +29,21 @@ var Renderer = (function() {
     g.fillStyle = "#f51";
     g.fill();
   }
+  function drawPyroblast(g, x, y) {
+    // Draw a huge red circle
+    g.beginPath();
+    g.arc(x, y, 360, 0, 2*Math.PI);
+    g.fillStyle = "#932";
+    g.fill();
+    g.beginPath();
+    g.arc(x, y, 180, 0, 2*Math.PI);
+    g.fillStyle = "#e74";
+    g.fill();
+    g.beginPath();
+    g.arc(x, y, 60, 0, 2*Math.PI);
+    g.fillStyle = "#fa3";
+    g.fill();
+  }
   function drawMagicMissile(g, x, y) {
     // Draw a blue circle
     g.beginPath();
@@ -44,22 +59,27 @@ var Renderer = (function() {
   }
   function drawHeal(g, x, y, completion) {
     g.beginPath();
-    g.arc(x, y, 350*completion, 0, 2*Math.PI);
-    g.fillStyle = "rgba(170, 248, 210, " + ((1-completion)*(1-completion)) + ")";
+    g.arc(x, y, 600*completion, 0, 2*Math.PI);
+    g.fillStyle = "rgba(170, 248, 210, " + ((1-completion)) + ")";
     g.fill();
   }
 
   function drawSpell (g, xstart, xdir, spelly, spell) {
     timeDelta = new Date().getTime() - spell.timestamp;
+    if (timeDelta < 1000) {
+      if (spell.type === "PYROBLAST") {
+        drawPyroblast(g, xstart+(xdir*Math.pow(timeDelta / 1000, 2.5)), spelly);
+      }
+    }
     if (timeDelta < 500) {
       if (spell.type === "MAGICMISSILE") {
         drawMagicMissile(g, xstart+(xdir*Math.pow(timeDelta / 500, 2)), spelly);
       } else if (spell.type === "FIREBALL") {
-         drawFireball(g, xstart+(xdir*Math.pow(timeDelta / 500, 1.5)), spelly);
+        drawFireball(g, xstart+(xdir*Math.pow(timeDelta / 500, 1.5)), spelly);
       } else if (spell.type === "POISON") {
         drawPoison(g, xstart+(xdir*Math.pow(timeDelta / 500, 1.3)), spelly);
       } else if (spell.type == "HEAL") {
-        drawHeal(g, xstart+(xdir*0.1), spelly, timeDelta / 500);
+        drawHeal(g, xstart+(xdir*0.25), spelly, timeDelta / 500);
       }
     }
   }
@@ -93,7 +113,7 @@ var Renderer = (function() {
     g.fillRect(0, 0, canvas.width, canvas.height);
 
     // Health bars
-    var max_hp_bar_width = canvas.width/2-20;    
+    var max_hp_bar_width = canvas.width/2-20;
 
     // Player 1 health
     var hp = game.playerLeft.health;
@@ -162,23 +182,37 @@ var Renderer = (function() {
       });
       g.font = "24px sans";
       g.fillStyle = "#ff0";
-      g.fillText(str, 20+xofs, 120);
+      g.fillText(str, 20+xofs, 150);
 
       // Defense
       if (p.defense === "SHIELD") {
-        g.fillText("Shield!", 20+xofs, 180);
+        g.fillText("Shield!", 20+xofs, 210);
       }
       else if (p.defense === "GREATERSHIELD") {
-        g.fillText("Greater shield!", 20+xofs, 180);
+        g.fillText("Greater shield!", 20+xofs, 210);
       }
       else if (p.defense !== "NONE") {
-        g.fillText(p.defense, 20+xofs, 180);
+        g.fillText(p.defense, 20+xofs, 210);
       }
 
       // Augment
       if (p.augmentSpell) {
         g.fillText("Augment!", 20+xofs, 500);
       }
+
+      // Log of recent gestures
+      var drawPos = 20 + xofs;
+      p.gestureHistory.forEach (function (gesture, i) {
+        if (i+7 >= p.gestureHistory.length) {
+          var data = gestureIconData[gesture.type];
+          //console.log(gesture + ": " + JSON.stringify(data));
+          g.drawImage(gestureIcons, data.col * 200, data.row * 200, 200, 200, drawPos, 60, 50, 50);
+          drawPos += 60;
+        }
+      });
+      g.font = "24px sans";
+      g.fillStyle = "#ff0";
+      //g.fillText(str, 20+xofs, 60);
     }
   }
   function resizeCanvas() {
