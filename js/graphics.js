@@ -158,11 +158,11 @@ var Renderer = (function() {
       hp_colour = COLOUR_HP_POISONED;
     }
     g.beginPath();
-    g.rect(canvas.width - w, 10, w - 10, 40);
+    g.rect(canvas.width - 10, 10, -w, 40);
     g.fillStyle = hp_colour;
     g.fill();
     g.beginPath();
-    g.rect(canvas.width - max_hp_bar_width, 10, max_hp_bar_width - w, 40);
+    g.rect(canvas.width / 2 + 10, 10, max_hp_bar_width - w, 40);
     g.fillStyle = COLOUR_HP_GONE;
     g.fill();
     g.fillStyle = COLOUR_HP_TEXT;
