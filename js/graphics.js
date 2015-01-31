@@ -60,10 +60,10 @@ var Renderer = (function() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight-50;
   }
-  function initGraphics(game) {
+  function initGraphics(g) {
     // Called when the document is loaded.
     canvas = document.getElementById('game_canvas');
-    game = game;
+    game = g;
     resizeCanvas();
     setInterval(render, 30);
   }

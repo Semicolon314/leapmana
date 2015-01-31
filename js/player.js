@@ -8,7 +8,7 @@ var Player = (function() {
     this.gestureHistory = [];
     this.health = MAX_HEALTH;
     this.gesture = new Gesture(function(g) {
-      console.log(_this);
+      console.log(g);
       _this.gestureHistory.push({type: g, timestamp: new Date().getTime()});
       _this.castSpells();
     });
@@ -24,7 +24,11 @@ var Player = (function() {
   // If it is, casts it
   Player.prototype.castSpells = function() {
     var rawList = this.gestureHistory.map(function(gestureObj) { return gestureObj.type });
-    // TODO: Implement
+    
+    var spell = spellcheck(rawList);
+    if(spell !== "NONE") {
+      this.spellHistory.push({type: spell, timestamp: new Date().getTime()});
+    }
   };
 
   // Gets rid of spells and gestures older than 20 seconds
