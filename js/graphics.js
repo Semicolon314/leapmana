@@ -27,19 +27,27 @@ var Renderer = (function() {
     g.fillStyle = COLOR_BG;
     g.fill();
 
+    // Health bars
+    var max_hp_bar_width = canvas.width/2-10;
+
     // Player 1 health
-    var w = canvas.width/2-10;
+    var hp = game.playerLeft.health;
+    var w = max_hp_bar_width * (hp/Player.MAX_HEALTH);
     g.beginPath();
     g.rect(0, 0, w, 20);
     g.fillStyle = COLOR_HP_BAR;
     g.fill();
 
     // Player 2 health
-    var w = canvas.width/2-10;
+    var hp = game.playerRight.health;
+    var w = max_hp_bar_width * (hp/Player.MAX_HEALTH);
     g.beginPath();
     g.rect(canvas.width - w, 0, w, 20);
     g.fillStyle = COLOR_HP_BAR;
     g.fill();
+
+    // Player 1 gestures (last 5)
+    
 
     // Draw a blue circle in the center
     g.beginPath();
