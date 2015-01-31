@@ -68,7 +68,7 @@ var Gesture = (function() {
 
   // Detects a gesture at an instantaneous moment in time
   Gesture.prototype.instantGesture = function(hand) {
-    if(hand.confidence < 0.5)
+    if(hand.confidence < 0.3)
       return; // too bad
 
     this.heightHistory.push(hand.middleFinger.distal.center()[1]);
@@ -101,7 +101,7 @@ var Gesture = (function() {
       if(hand.palmNormal[1] > 0.2) {
         return "FLIP";
       }
-      if(/*hand.palmNormal[2] > 0.2 && */heightDistance < -45) {
+      if(/*hand.palmNormal[2] > 0.2 && */heightDistance < -35) {
         return "PRESS";
       }
       if(/*hand.palmNormal[2] < -0.2 && */heightDistance > 25) {
