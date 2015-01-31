@@ -3,9 +3,10 @@ var Renderer = (function() {
   var game = null;
   var spells = [];
 
-  // Colors
-  var COLOR_BG = "#333";
-  var COLOR_HP_BAR = "#a00";
+  // colours
+  var COLOUR_BG = "#333";
+  var COLOUR_HP_BAR = "#a00";
+  var
 
   window.addEventListener('resize', resizeCanvas, false);
 
@@ -55,10 +56,10 @@ var Renderer = (function() {
     // Called every frame to render graphics.
     var g = canvas.getContext('2d');
 
-    // Fill entire frame with bg color
+    // Fill entire frame with bg colour
     g.beginPath();
     g.rect(0, 0, canvas.width, canvas.height);
-    g.fillStyle = COLOR_BG;
+    g.fillStyle = COLOUR_BG;
     g.fill();
 
     // Health bars
@@ -69,7 +70,7 @@ var Renderer = (function() {
     var w = max_hp_bar_width * (hp/Player.MAX_HEALTH);
     g.beginPath();
     g.rect(0, 0, w, 20);
-    g.fillStyle = COLOR_HP_BAR;
+    g.fillStyle = COLOUR_HP_BAR;
     g.fill();
 
     // Player 2 health
@@ -77,7 +78,7 @@ var Renderer = (function() {
     var w = max_hp_bar_width * (hp/Player.MAX_HEALTH);
     g.beginPath();
     g.rect(canvas.width - w, 0, w, 20);
-    g.fillStyle = COLOR_HP_BAR;
+    g.fillStyle = COLOUR_HP_BAR;
     g.fill();
 
     var players = [game.playerLeft, game.playerRight];
