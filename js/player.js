@@ -69,9 +69,9 @@ var Player = (function() {
       this.defense = spell;
     } else if (spell === "SILENCE") {
       //Dunno if we should make him invunerable with certain defense
-      this.opponent.silenced = new Date().getTime();
-    }else if (spell === "POISON") {
-      spellDamageOverTime = 1;
+      this.opponent.silenced = Date().getTime();
+    } else if (spell === "POISON") {
+      spellDamageOverTime = 5;
     } else if (spell === "DYNAMITE") {
       spellDamage = 5;
       spellHeal = -5;
@@ -117,11 +117,11 @@ var Player = (function() {
         spellDamage = 0;
       }
       this.opponent.health -= spellDamage;
+      this.opponent.damageOverTime = spellDamageOverTime;
     }
     if (spellHeal > 0 || (this.defense !== "SHIELD" && this.defense !== "GREATERSHIELD" && this.defense !== "GREATERSHIELDBROKEN")) {
       this.heatlh += spellHeal;
     }
-
 
   };
 

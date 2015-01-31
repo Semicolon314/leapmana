@@ -130,11 +130,16 @@ var Renderer = (function() {
       if (p.defense === "SHIELD") {
         g.fillText("Shield!", 20+xofs, 180);
       }
-      else if (p.defense === "GREATER SHIELD") {
+      else if (p.defense === "GREATERSHIELD") {
         g.fillText("Greater shield!", 20+xofs, 180);
       }
       else if (p.defense !== "NONE") {
         g.fillText(p.defense, 20+xofs, 180);
+      }
+
+      // Augment
+      if (p.augmentSpell) {
+        g.fillText("Augment!", 20+xofs, 500);
       }
     }
   }

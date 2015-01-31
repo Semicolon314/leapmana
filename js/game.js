@@ -27,10 +27,14 @@ var Game = (function() {
       else
         this.playerRight.gesture.handFrame(hand);
     }
+  };
 
+  Game.prototype.tick = function() {
+    this.playerLeft.frameUpdate();
+    this.playerRight.frameUpdate();
     this.playerLeft.pruneHistory();
     this.playerRight.pruneHistory();
-  };
+  }
 
   return Game;
 })();

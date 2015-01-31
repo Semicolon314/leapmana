@@ -4,6 +4,9 @@ var game = new Game();
 
 $(document).ready(function() {
   Renderer(game);
+  setInterval(function() {
+    game.tick();
+  }, 17);
 });
 
 Leap.loop(function(frame) {
