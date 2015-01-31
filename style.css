@@ -1,0 +1,19 @@
+p {
+	font-family: Arial;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	background: #222;
+	color: #888;
+}
+
+html, body {
+	width: 100%;
+	height: 100%;
+}
+
+canvas {
+	display: block;
+}
