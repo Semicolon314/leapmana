@@ -1,4 +1,5 @@
 var MAX_HEALTH = 20;
+var DOT_FRAMES = 50; // how many frames between DoT ticks
 
 var Player = (function() {
   var Player = function() {
@@ -13,6 +14,9 @@ var Player = (function() {
       _this.castSpells();
     });
     this.spellHistory = [];
+    this.damageOverTime = 0; // current damage remaining to be dealt over time
+    this.damageOverTimeFrame = 0; // frames left until next DoT
+    this.augmentSpell = false; // augment next spell?
     // Spells are in format: {type: "FIREBALL", timestamp: epochtime_number}
   };
 
@@ -30,6 +34,17 @@ var Player = (function() {
       this.spellHistory.push({type: spell, timestamp: new Date().getTime()});
     }
   };
+
+  Player.prototype.frameUpdate = function() {
+    if(this.damageOverTime > 0) {
+      this.damageOverTimeFrame--;
+      if(this.damageOverTimeFrame <= 0) {
+        this.health--;
+        this.damageOverTime--;
+        this.damageOverTimeFrame = DOT_FRAMES;
+      }
+    }
+  }
 
   // Gets rid of spells and gestures older than 20 seconds
   Player.prototype.pruneHistory = function() {
