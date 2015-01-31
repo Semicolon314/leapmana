@@ -22,11 +22,14 @@ var Game = (function() {
 
     if(frame.hands.length === 1) {
       var hand = frame.hands[0];
-      if(hand.position[0] < 0)
+      if(hand.palmPosition[0] < 0)
         this.playerLeft.gesture.handFrame(hand);
       else
         this.playerRight.gesture.handFrame(hand);
     }
+
+    this.playerLeft.pruneHistory();
+    this.playerRight.pruneHistory();
   };
 
   return Game;
