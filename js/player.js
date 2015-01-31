@@ -92,7 +92,7 @@ var Player = (function() {
       };
     } else if (spell === "HEAL") {
       this.damageOverTime = 0;
-      spellHeal = 3;
+      spellHeal = 4;
     } else if (spell === "MAGICMISSILE") {
       spellDamage = 1;
       spellOffensive = true;
@@ -106,7 +106,7 @@ var Player = (function() {
       };
       spellOffensive = true;
     } else if (spell === "POISON") {
-      spellDamageOverTime = 5;
+      spellDamageOverTime = 4;
       spellOffensive = true;
       spellDelay = 500;
     } else if (spell === "DYNAMITE") {
