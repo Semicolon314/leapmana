@@ -14,9 +14,10 @@ var Renderer = (function() {
     "FIST": {row: 1, col: 3},
   };
 
-  // Colors
-  var COLOR_BG = "#333";
-  var COLOR_HP_BAR = "#a00";
+  // colours
+  var COLOUR_BG = "#333";
+  var COLOUR_HP_BAR = "#a00";
+  var COLOUR_HP_GONE = "#bbb";
 
   window.addEventListener('resize', resizeCanvas, false);
 
@@ -47,14 +48,29 @@ var Renderer = (function() {
     g.fill();
   }
 
+  function drawSpell (g, xstart, xdir, spelly, spell) {
+    timeDelta = new Date().getTime() - spell.timestamp;
+    if (timeDelta < 500) {
+      if (spell.type === "MAGICMISSILE") {
+        drawMagicMissile(g, xstart+(xdir*Math.pow(timeDelta / 500, 2)), spelly);
+      } else if (spell.type === "FIREBALL") {
+         drawFireball(g, xstart+(xdir*Math.pow(timeDelta / 500, 1.5)), spelly);
+      } else if (spell.type === "POISON") {
+        drawPoison(g, xstart+(xdir*Math.pow(timeDelta / 500, 1.3)), spelly);
+      } else if (spell.type == "HEAL") {
+        drawHeal(g, xstart+(xdir*0.1), spelly, timeDelta / 500);
+      }
+    }
+  }
+
   function render() {
     // Called every frame to render graphics.
     var g = canvas.getContext('2d');
 
-    // Fill entire frame with bg color
+    // Fill entire frame with bg colour
     g.beginPath();
     g.rect(0, 0, canvas.width, canvas.height);
-    g.fillStyle = COLOR_BG;
+    g.fillStyle = COLOUR_BG;
     g.fill();
 
     // Health bars
@@ -65,7 +81,7 @@ var Renderer = (function() {
     var w = max_hp_bar_width * (hp/Player.MAX_HEALTH);
     g.beginPath();
     g.rect(0, 0, w, 20);
-    g.fillStyle = COLOR_HP_BAR;
+    g.fillStyle = COLOUR_HP_BAR;
     g.fill();
 
     // Player 2 health
@@ -73,7 +89,7 @@ var Renderer = (function() {
     var w = max_hp_bar_width * (hp/Player.MAX_HEALTH);
     g.beginPath();
     g.rect(canvas.width - w, 0, w, 20);
-    g.fillStyle = COLOR_HP_BAR;
+    g.fillStyle = COLOUR_HP_BAR;
     g.fill();
 
     var players = [game.playerLeft, game.playerRight];
@@ -106,32 +122,8 @@ var Renderer = (function() {
       // Spells
       var str = "";
       p.spellHistory.forEach (function (spell, i) {
-        var curTime = new Date().getTime();
-        var timeDelta = curTime - spell.timestamp;
-        if (spell.type == "MAGICMISSILE") {
-          if (timeDelta < 500) {
-            var completion = timeDelta / 500;
-            drawMagicMissile(g, xstart+(xdir*Math.pow(completion, 2)), spelly);
-          }
-        }
-        else if (spell.type == "FIREBALL") {
-          if (timeDelta < 500) {
-            var completion = timeDelta / 500;
-            drawFireball(g, xstart+(xdir*Math.pow(completion, 1.5)), spelly);
-          }
-        }
-        else if (spell.type == "POISON") {
-          if (timeDelta < 500) {
-            var completion = timeDelta / 500;
-            drawPoison(g, xstart+(xdir*Math.pow(completion, 1.3)), spelly);
-          }
-        }
-        else if (spell.type == "HEAL") {
-          if (timeDelta < 500) {
-            var completion = timeDelta / 500;
-            drawHeal(g, xstart+(xdir*0.1), spelly, completion);
-          }
-        }
+        drawSpell(g, xstart, xdir, spelly, spell);
+
         if (timeDelta < 500) {
           str += spell.type + " ";
         }
