@@ -8,15 +8,29 @@ var Player = (function() {
     this.position = position;
     this.defense = "NONE"; // active defense (only one at a time)
     this.gestureHistory = [];
+    this.gestureHistoryClearTimeout = null;
     this.health = MAX_HEALTH;
     this.gesture = new Gesture(function(g) {
       console.log(g);
       if(new Date().getTime() - _this.silenced > 2000) {
+        if (_this.gestureHistory.length > 0) {
+          clearTimeout(_this.gestureHistoryClearTimeout);
+          // Clear the history if the user gestures *after*
+          // finishing a spell.
+          var last_g = _this.gestureHistory[_this.gestureHistory.length-1].type;
+          if (last_g === "FIST" || last_g === "POINT" || last_g === "DOUBLE") {
+            _this.gestureHistory = [];
+          }
+        }
+        // Clear the history if the user finishes casting a spell, then
+        // waits.
+        if (g === "FIST" || g === "POINT" || g === "DOUBLE") {
+          _this.gestureHistoryClearTimeout = setTimeout(function() {
+            _this.gestureHistory = [];
+          }, 500);
+        }
         _this.gestureHistory.push({type: g, timestamp: new Date().getTime()});
         _this.castSpells(_this.getHistory());
-        if(g === "FIST" || g === "POINT" || g === "DOUBLE") {
-          _this.gestureHistory = [];
-        }
       }
     }, position);
     this.spellHistory = [];
