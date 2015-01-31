@@ -157,7 +157,7 @@ var Renderer = (function() {
       // Total x-movement of spell effects
       var xdir = canvas.width*(-pid*2+1)*1.2;
       // y-coordinate of most spell effects
-      var spelly = 300;
+      var spelly = canvas.height / 2;
 
       // Log of recent gestures
       var drawPos = 20 + xofs;
