@@ -18,6 +18,7 @@ var Renderer = (function() {
   var COLOUR_BG = "#333";
   var COLOUR_HP_BAR = "#a00";
   var COLOUR_HP_GONE = "#bbb";
+  var COLOUR_HP_POISONED = "#073";
   var COLOUR_HP_TEXT = "#111";
 
   window.addEventListener('resize', resizeCanvas, false);
@@ -33,11 +34,11 @@ var Renderer = (function() {
     // Draw a huge red circle
     g.beginPath();
     g.arc(x, y, 360, 0, 2*Math.PI);
-    g.fillStyle = "#932";
+    g.fillStyle = "rgba(153, 51, 34, 0.5)";
     g.fill();
     g.beginPath();
     g.arc(x, y, 180, 0, 2*Math.PI);
-    g.fillStyle = "#e74";
+    g.fillStyle = "rgba(238, 119, 68, 0.5)";
     g.fill();
     g.beginPath();
     g.arc(x, y, 60, 0, 2*Math.PI);
@@ -57,6 +58,18 @@ var Renderer = (function() {
     g.fillStyle = "#3c2";
     g.fill();
   }
+  function drawVampiricBlast(g, x, y, completion) {
+    g.beginPath();
+    g.arc(x, y, 65-20*completion, 0, 2*Math.PI);
+    g.fillStyle = "#a00";
+    g.fill();
+    if (completion > Math.pow(0.5, 2)) {
+      g.beginPath();
+      g.arc(canvas.width-x, y, 35+10*completion, 0, 2*Math.PI);
+      g.fillStyle = "#933";
+      g.fill();
+    }
+  }
   function drawHeal(g, x, y, completion) {
     g.beginPath();
     g.arc(x, y, 600*completion, 0, 2*Math.PI);
@@ -72,14 +85,17 @@ var Renderer = (function() {
       }
     }
     if (timeDelta < 500) {
+      var completion = timeDelta / 500;
       if (spell.type === "MAGICMISSILE") {
-        drawMagicMissile(g, xstart+(xdir*Math.pow(timeDelta / 500, 2)), spelly);
+        drawMagicMissile(g, xstart+(xdir*Math.pow(completion, 2)), spelly);
       } else if (spell.type === "FIREBALL") {
-        drawFireball(g, xstart+(xdir*Math.pow(timeDelta / 500, 1.5)), spelly);
+        drawFireball(g, xstart+(xdir*Math.pow(completion, 1.5)), spelly);
       } else if (spell.type === "POISON") {
-        drawPoison(g, xstart+(xdir*Math.pow(timeDelta / 500, 1.3)), spelly);
+        drawPoison(g, xstart+(xdir*Math.pow(completion, 1.3)), spelly);
+      } else if (spell.type === "VAMPIRICBLAST") {
+        drawVampiricBlast(g, xstart+(xdir*Math.pow(completion, 0.5)), spelly, completion);
       } else if (spell.type == "HEAL") {
-        drawHeal(g, xstart+(xdir*0.25), spelly, timeDelta / 500);
+        drawHeal(g, xstart+(xdir*0.25), spelly, completion);
       }
     }
   }
@@ -118,9 +134,13 @@ var Renderer = (function() {
     // Player 1 health
     var hp = game.playerLeft.health;
     var w = max_hp_bar_width * (hp/Player.MAX_HEALTH);
+    var hp_colour = COLOUR_HP_BAR;
+    if (game.playerLeft.damageOverTime > 0) {
+      hp_colour = COLOUR_HP_POISONED;
+    }
     g.beginPath();
     g.rect(10, 10, w, 40);
-    g.fillStyle = COLOUR_HP_BAR;
+    g.fillStyle = hp_colour;
     g.fill();
     g.beginPath();
     g.rect(w + 10, 10, max_hp_bar_width - w, 40);
@@ -133,9 +153,13 @@ var Renderer = (function() {
     // Player 2 health
     hp = game.playerRight.health;
     w = max_hp_bar_width * (hp/Player.MAX_HEALTH);
+    hp_colour = COLOUR_HP_BAR;
+    if (game.playerRight.damageOverTime > 0) {
+      hp_colour = COLOUR_HP_POISONED;
+    }
     g.beginPath();
     g.rect(canvas.width - w, 10, w - 10, 40);
-    g.fillStyle = COLOUR_HP_BAR;
+    g.fillStyle = hp_colour;
     g.fill();
     g.beginPath();
     g.rect(canvas.width - max_hp_bar_width, 10, max_hp_bar_width - w, 40);
