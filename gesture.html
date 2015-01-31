@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>Leap Mana Gesture Test</title>
+    <script src="http://js.leapmotion.com/leap-0.6.4.js"></script>
+    <script src="js/gesture.js"></script>
+  </head>
+  <body>
+    <div id="curGesture">
+
+    </div>
+    <script>
+var g = new Gesture(function(gesture) {
+  console.log("Gesture detected: " + gesture);
+});
+
+Leap.loop(function(frame) {
+  if(frame.hands.length > 0)
+    g.handFrame(frame.hands[0]);
+});
+    </script>
+  </body>
+</html>
