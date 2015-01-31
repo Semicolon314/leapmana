@@ -6,7 +6,7 @@ var Renderer = (function() {
   // colours
   var COLOUR_BG = "#333";
   var COLOUR_HP_BAR = "#a00";
-  var
+  var COLOUR_HP_GONE = "#bbb";
 
   window.addEventListener('resize', resizeCanvas, false);
 
