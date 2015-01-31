@@ -2,8 +2,8 @@
 
 var Game = (function() {
   var Game = function() {
-    this.playerLeft = new Player();
-    this.playerRight = new Player();
+    this.playerLeft = new Player("LEFT");
+    this.playerRight = new Player("RIGHT");
     this.playerLeft.setOpponent(this.playerRight);
     this.playerRight.setOpponent(this.playerLeft);
   };

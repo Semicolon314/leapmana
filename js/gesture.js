@@ -6,6 +6,8 @@
  * - when it detects a gesture, it will call the callback
  */
 
+var USE_KEYS = true;
+
 var Gesture = (function() {
   var THRESHOLD = 10; // required consecutive frames for a gesture to be valid
   var THRESH = {
@@ -19,11 +21,48 @@ var Gesture = (function() {
     "STOP": 10
   };
 
-  var Gesture = function(callback) {
+  var KEYS = {
+    "LEFT": {
+      "Q": "THUMB",
+      "W": "FLIP",
+      "E": "PRESS",
+      "R": "STOP",
+      "A": "SPOCK",
+      "S": "FIST",
+      "D": "POINT",
+      "F": "DOUBLE"
+    },
+    "RIGHT": {
+      "U": "THUMB",
+      "I": "FLIP",
+      "O": "PRESS",
+      "P": "STOP",
+      "J": "SPOCK",
+      "K": "FIST",
+      "L": "POINT",
+      186: "DOUBLE" // ;
+    }
+  }
+
+  var Gesture = function(callback, player) {
+    var _this = this;
+
     this.callback = callback;
     this.lastGesture = "NONE"; // last callback gesture
     this.currentGesture = "NONE";
     this.currentFrames = 0;
+    this.player = player; // "LEFT" or "RIGHT"
+
+    if(USE_KEYS) {
+      $(window).keydown(function(event) {
+        var p = KEYS[_this.player];
+        if(event.which in p) {
+          _this.callback(KEYS[_this.player][event.which]);
+        } else if(String.fromCharCode(event.which) in p) {
+          _this.callback(KEYS[_this.player][String.fromCharCode(event.which)]);
+        }
+      });
+    }
   };
 
   // Detects a gesture at an instantaneous moment in time

@@ -2,9 +2,10 @@ var MAX_HEALTH = 20;
 var DOT_FRAMES = 50; // how many frames between DoT ticks
 
 var Player = (function() {
-  var Player = function() {
+  var Player = function(position) {
     var _this = this;
 
+    this.position = position;
     this.defense = "NONE"; // active defense (only one at a time)
     this.gestureHistory = [];
     this.health = MAX_HEALTH;
@@ -12,7 +13,7 @@ var Player = (function() {
       console.log(g);
       _this.gestureHistory.push({type: g, timestamp: new Date().getTime()});
       _this.castSpells();
-    });
+    }, position);
     this.spellHistory = [];
     this.damageOverTime = 0; // current damage remaining to be dealt over time
     this.damageOverTimeFrame = 0; // frames left until next DoT
