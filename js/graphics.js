@@ -138,6 +138,12 @@ var Renderer = (function() {
     g.arc(x, y, 600*completion, 0, 2*Math.PI);
     g.fillStyle = "rgba(170, 248, 210, " + ((1-completion)) + ")";
     g.fill();
+    if (completion < 0.5 && Math.random() < 0.8) {
+      particles.push(new Particle(x + Math.random()*30-15, y + Math.random()*30-15, Math.random()*80-40, Math.random()*80-40, 0.9, 0.9, Math.random() * 10 + 10, 0.99, "rgba(255, 255, 255, 0.4)", Math.random() * 40 + 15, 0.2));
+    }
+    if (completion < 0.7 && Math.random() < 0.4) {
+      particles.push(new Particle(x + Math.random()*30-15, y + Math.random()*30-15, Math.random()*80-40, Math.random()*80-40, 0.9, 0.9, Math.random() * 50 + 10, 0.99, "rgba(0, 255, 192, 0.4)", Math.random() * 40 + 15, 0.2));
+    }
   }
   function drawDynamite(g, x, y, completion) {
     g.beginPath();
