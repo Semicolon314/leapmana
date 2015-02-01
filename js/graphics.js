@@ -46,10 +46,17 @@ var Renderer = (function() {
     g.fill();
   }
   function drawMagicMissile(g, x, y) {
-    // Draw a blue circle
+    // Draw a glowing blue circle
+    var grd = g.createRadialGradient(x, y, 0, x, y, 80);
+    grd.addColorStop(0, "rgba(255, 255, 255, 1)");
+    grd.addColorStop(1, "rgba(0, 128, 255, 0)");
     g.beginPath();
-    g.arc(x, y, 30, 0, 2*Math.PI);
-    g.fillStyle = "#68a";
+    g.arc(x, y, 80, 0, 2*Math.PI);
+    g.fillStyle = grd;
+    g.fill();
+    g.beginPath();
+    g.arc(x, y, 20, 0, 2*Math.PI);
+    g.fillStyle = "rgba(240, 250, 255, 0.9)";
     g.fill();
   }
   function drawPoison(g, x, y) {
@@ -66,7 +73,7 @@ var Renderer = (function() {
     if (completion > Math.pow(0.5, 2)) {
       g.beginPath();
       g.arc(canvas.width-x, y, 35+10*completion, 0, 2*Math.PI);
-      g.fillStyle = "#933";
+      g.fillStyle = "#fff";
       g.fill();
     }
   }
@@ -74,6 +81,20 @@ var Renderer = (function() {
     g.beginPath();
     g.arc(x, y, 600*completion, 0, 2*Math.PI);
     g.fillStyle = "rgba(170, 248, 210, " + ((1-completion)) + ")";
+    g.fill();
+  }
+  function drawDynamite(g, x, y, completion) {
+    g.beginPath();
+    g.arc(x, y, 600*completion, 0, 2*Math.PI);
+    g.fillStyle = "rgba(190, 48, 32, " + ((1-completion)) + ")";
+    g.fill();
+    g.beginPath();
+    g.arc(x, y, 400*Math.pow(completion, 0.7), 0, 2*Math.PI);
+    g.fillStyle = "rgba(255, 157, 10, " + ((1-completion)) + ")";
+    g.fill();
+    g.beginPath();
+    g.arc(x, y, 200*Math.pow(completion, 0.5), 0, 2*Math.PI);
+    g.fillStyle = "rgba(255, 248, 210, " + ((1-completion)) + ")";
     g.fill();
   }
 
@@ -94,6 +115,8 @@ var Renderer = (function() {
         drawPoison(g, xstart+(xdir*Math.pow(completion, 1.3)), spelly);
       } else if (spell.type === "VAMPIRICBLAST") {
         drawVampiricBlast(g, xstart+(xdir*Math.pow(completion, 0.5)), spelly, completion);
+      } else if (spell.type === "DYNAMITE") {
+        drawDynamite(g, canvas.width/2, spelly, completion);
       } else if (spell.type == "HEAL") {
         drawHeal(g, xstart+(xdir*0.25), spelly, completion);
       }
@@ -169,17 +192,21 @@ var Renderer = (function() {
     g.font = "30px Arial";
     g.fillText(hp, canvas.width / 4 * 3, 40);
 
-
     var players = [game.playerLeft, game.playerRight];
     for (var pid=0; pid<=1; pid++) {
       var p = players[pid];
 
       // If player 2, offset by half the canvas width.
       var xofs = (pid * canvas.width / 2 + 30);
+      // for shields
+      var cxofs = (pid * 2*canvas.width/3)+canvas.width/6
       // x-coord that spell effects start at
       var xstart = canvas.width/2 + canvas.width/2*1.1*(pid*2-1);
       // Total x-movement of spell effects
       var xdir = canvas.width*(-pid*2+1)*1.2;
+      if (p.opponent.defense != "NONE") {
+        xdir *= 0.74;
+      }
       // y-coordinate of most spell effects
       var spelly = canvas.height / 2;
 
@@ -210,10 +237,29 @@ var Renderer = (function() {
 
       // Defense
       if (p.defense === "SHIELD") {
-        g.fillText("Shield!", 20+xofs, 210);
+        g.beginPath();
+        g.fillStyle = "#ff0";
+        g.fillRect(cxofs-10.5, spelly-50.5, 20, 100);
       }
       else if (p.defense === "GREATERSHIELD") {
-        g.fillText("Greater shield!", 20+xofs, 210);
+        g.beginPath();
+        g.fillStyle = "#ff0";
+        g.fillRect(cxofs-20.5, spelly-100.5, 40, 200);
+      }
+      else if (p.defense === "GREATERSHIELDBROKEN") {
+        g.beginPath();
+        g.fillStyle = "#ff0";
+        g.fillRect(cxofs-20.5, spelly-60.5, 40, 120);
+      }
+      else if (p.defense === "COUNTERSPELL") {
+        g.beginPath();
+        g.fillStyle = "#08f";
+        g.fillRect(cxofs-10.5, spelly-50.5, 20, 100);
+      }
+      else if (p.defense === "MIRROR") {
+        g.beginPath();
+        g.fillStyle = "#fff";
+        g.fillRect(cxofs-10.5, spelly-50.5, 20, 100);
       }
       else if (p.defense !== "NONE") {
         g.fillText(p.defense, 20+xofs, 210);
@@ -221,7 +267,12 @@ var Renderer = (function() {
 
       // Augment
       if (p.augmentSpell) {
-        g.fillText("Augment!", 20+xofs, 500);
+        var grd = g.createLinearGradient(xstart, 0, xstart+xdir*0.2, 0);
+        grd.addColorStop(0, "rgba(255, 0, 0, 0.5)");
+        grd.addColorStop(1, "rgba(128, 0, 0, 0)");
+        g.beginPath();
+        g.fillStyle = grd;
+        g.fillRect(xstart, 0, xdir*0.2, canvas.height);
       }
 
       // Log of recent gestures
