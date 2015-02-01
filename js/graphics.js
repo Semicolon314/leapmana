@@ -38,13 +38,23 @@ var Renderer = (function() {
   }
 
   function drawFireball(g, x, y) {
-    // Draw a red circle
     g.beginPath();
-    g.arc(x, y, 80, 0, 2*Math.PI);
-    g.fillStyle = "#f51";
+    g.arc(x, y, 100, 0, 2*Math.PI);
+    g.fillStyle = "rgba(255, 50, 0, 0.4)";
+    g.fill();
+    g.beginPath();
+    g.arc(x, y, 70, 0, 2*Math.PI);
+    g.fillStyle = "rgba(255, 150, 0, 0.8)";
+    g.fill();
+    g.beginPath();
+    g.arc(x, y, 40, 0, 2*Math.PI);
+    g.fillStyle = "rgba(255, 255, 200, 1.0)";
     g.fill();
     if (Math.random() > 0.8) {
-      particles.push(new Particle(x, y, Math.random() * 60 - 30, Math.random() * 20 - 5, 0.98, 0.98, Math.random() * 20 + 20, 0.95, "#f51", 80));
+      particles.push(new Particle(x, y, Math.random() * 60 - 30, Math.random() * 40 - 25, 0.98, 0.98, Math.random() * 20 + 20, 0.95, "#f80", 80));
+    }
+    if (Math.random() > 0.9) {
+      particles.push(new Particle(x, y, Math.random() * 10 - 5, Math.random() * 20 - 5, 0.98, 0.98, Math.random() * 20 + 20, 0.95, "#888", 80));
     }
   }
   function drawPyroblast(g, x, y) {
@@ -61,6 +71,12 @@ var Renderer = (function() {
     g.arc(x, y, 60, 0, 2*Math.PI);
     g.fillStyle = "#fa3";
     g.fill();
+    if (Math.random() > 0.8) {
+      particles.push(new Particle(x, y, Math.random() * 60 - 30, Math.random() * 40 - 25, 0.98, 0.98, Math.random() * 20 + 20, 0.95, "#f80", 80));
+    }
+    if (Math.random() > 0.9) {
+      particles.push(new Particle(x, y, Math.random() * 10 - 5, Math.random() * 20 - 5, 0.98, 0.98, Math.random() * 20 + 20, 0.95, "#888", 80));
+    }
   }
   function drawMagicMissile(g, x, y) {
     // Draw a glowing blue circle
@@ -83,11 +99,17 @@ var Renderer = (function() {
   function drawPoison(g, x, y) {
     g.beginPath();
     g.arc(x, y, 65, 0, 2*Math.PI);
-    g.fillStyle = "#3c2";
+    g.fillStyle = "rgba(51, 204, 34, 0.6)";
     g.fill();
     if (Math.random() > 0.8) {
-      particles.push(new Particle(x, y, Math.random() * 30 - 15, Math.random() * 8 - 2, 0.9, 0.9, Math.random() * 20 + 20, 0.99, "#3c2", 80));
+      particles.push(new Particle(x, y, Math.random() * 30 - 15, Math.random() * 8 - 2, 0.9, 0.9, Math.random() * 20 + 20, 0.99, "rgba(51, 204, 34, 0.4)", 80));
     }
+  }
+  function drawShieldBreaker(g, x, y) {
+    g.beginPath();
+    g.arc(x, y, 65, 0, 2*Math.PI);
+    g.fillStyle = "rgba(128, 128, 128, 1.0)";
+    g.fill();
   }
   function drawVampiricBlast(g, x, y, completion) {
     g.beginPath();
@@ -141,6 +163,8 @@ var Renderer = (function() {
         drawVampiricBlast(g, xstart+(xdir*Math.pow(completion, 0.5)), spelly, completion);
       } else if (spell.type === "DYNAMITE") {
         drawDynamite(g, canvas.width/2, spelly, completion);
+      } else if (spell.type === "SHIELDBREAKER") {
+        drawShieldBreaker(g, xstart+(xdir*Math.pow(completion, 2)), spelly, completion);
       } else if (spell.type === "HEAL") {
         drawHeal(g, xstart+(xdir*0.25), spelly, completion);
       }
@@ -179,7 +203,7 @@ var Renderer = (function() {
 
   function render() {
     window.requestAnimationFrame(render);
-    
+
     // Called every frame to render graphics.
     var g = canvas.getContext('2d');
 
@@ -204,7 +228,7 @@ var Renderer = (function() {
 
     // Particles
     updateParticles(g);
-    
+
     // Health bars
     var max_hp_bar_width = canvas.width/2-20;
 

@@ -92,6 +92,7 @@ var Player = (function() {
           _this.opponent.defense = "GREATERSHIELDBROKEN";
         }
       };
+      spellDelay = 500;
     } else if (spell === "GREATERSHIELD") {
       effect = function() {
         _this.defense = spell;
