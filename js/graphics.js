@@ -2,6 +2,7 @@ var Renderer = (function() {
   var canvas = null;
   var game = null;
   var spells = [];
+  var particles = [];
   var gestureIcons;
   var gestureIconData = {
     "SPOCK": {row: 0, col: 0},
@@ -23,12 +24,28 @@ var Renderer = (function() {
 
   window.addEventListener('resize', resizeCanvas, false);
 
+  function Particle (x, y, vx, vy, ax, ay, size, asize, col, life) {
+    this.x = x;
+    this.y = y;
+    this.vx = vx;
+    this.vy = vy;
+    this.ax = ax;
+    this.ay = ay;
+    this.size = size;
+    this.asize = asize;
+    this.col = col;
+    this.life = life;
+  }
+
   function drawFireball(g, x, y) {
     // Draw a red circle
     g.beginPath();
     g.arc(x, y, 80, 0, 2*Math.PI);
     g.fillStyle = "#f51";
     g.fill();
+    if (Math.random() > 0.8) {
+      particles.push(new Particle(x, y, Math.random() * 60 - 30, Math.random() * 20 - 5, 0.98, 0.98, Math.random() * 20 + 20, 0.95, "#f51", 80));
+    }
   }
   function drawPyroblast(g, x, y) {
     // Draw a huge red circle
@@ -58,12 +75,19 @@ var Renderer = (function() {
     g.arc(x, y, 20, 0, 2*Math.PI);
     g.fillStyle = "rgba(240, 250, 255, 0.9)";
     g.fill();
+    //Particles
+    if (Math.random() > 0.5) {
+      particles.push(new Particle(x, y, Math.random() * 10 - 5, Math.random() * 6 - 2, 0.9, 0.9, Math.random() * 20, 0.95, "#68a", 80));
+    }
   }
   function drawPoison(g, x, y) {
     g.beginPath();
     g.arc(x, y, 65, 0, 2*Math.PI);
     g.fillStyle = "#3c2";
     g.fill();
+    if (Math.random() > 0.8) {
+      particles.push(new Particle(x, y, Math.random() * 30 - 15, Math.random() * 8 - 2, 0.9, 0.9, Math.random() * 20 + 20, 0.99, "#3c2", 80));
+    }
   }
   function drawVampiricBlast(g, x, y, completion) {
     g.beginPath();
@@ -117,7 +141,7 @@ var Renderer = (function() {
         drawVampiricBlast(g, xstart+(xdir*Math.pow(completion, 0.5)), spelly, completion);
       } else if (spell.type === "DYNAMITE") {
         drawDynamite(g, canvas.width/2, spelly, completion);
-      } else if (spell.type == "HEAL") {
+      } else if (spell.type === "HEAL") {
         drawHeal(g, xstart+(xdir*0.25), spelly, completion);
       }
     }
@@ -126,6 +150,31 @@ var Renderer = (function() {
   function drawGestureIcon(g, gesture, x, y, size) {
     var data = gestureIconData[gesture];
     g.drawImage(gestureIcons, data.col * 200, data.row * 200, 200, 200, x, y, size, size);
+  }
+
+  function updateParticles(g) {
+    for (var i = 0; i < particles.length;) {
+      //Decay life, size and opacity
+      particles[i].life --;
+      console.log(particles[i].life);
+      if (particles[i].life < 0 || particles[i].size < 1) {
+        particles.splice(i, 1);
+      }
+      else {
+        particles[i].x += particles[i].vx;
+        particles[i].y += particles[i].vy;
+        particles[i].vx *= particles[i].ax;
+        particles[i].vy *= particles[i].ax;
+        particles[i].vy += 0.2; // Gravity
+        particles[i].size *= particles[i].asize;
+        // Draw the thing
+        g.beginPath();
+        g.arc(particles[i].x, particles[i].y, particles[i].size, 0, 2*Math.PI);
+        g.fillStyle = particles[i].col;
+        g.fill();
+        i ++;
+      }
+    }
   }
 
   function render() {
@@ -151,6 +200,9 @@ var Renderer = (function() {
     g.fillStyle = "rgba(51, 51, 51, 0.4)";
     g.fillRect(0, 0, canvas.width, canvas.height);
 
+    // Particles
+    updateParticles(g);
+    
     // Health bars
     var max_hp_bar_width = canvas.width/2-20;
 
