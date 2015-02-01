@@ -178,6 +178,8 @@ var Renderer = (function() {
   }
 
   function render() {
+    window.requestAnimationFrame(render);
+    
     // Called every frame to render graphics.
     var g = canvas.getContext('2d');
 
@@ -381,7 +383,7 @@ var Renderer = (function() {
     game = g;
     preloadImages();
     resizeCanvas();
-    setInterval(render, 17);
+    render();
   }
   return initGraphics;
 })();
