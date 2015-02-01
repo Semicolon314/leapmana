@@ -38,11 +38,6 @@ var Renderer = (function() {
     this.gravity = gravity;
   }
 
-  // Pass "default" for default values
-  function drawParticles(x, y, vx, vy, ax, ay, size, asize, col, life, gravity, density, probability) {
-
-  }
-
   function drawFireball(g, x, y) {
     g.beginPath();
     g.arc(x, y, 100, 0, 2*Math.PI);
@@ -125,12 +120,15 @@ var Renderer = (function() {
     g.arc(x, y, 65-20*completion, 0, 2*Math.PI);
     g.fillStyle = "#a00";
     g.fill();
-
+    if (Math.random() > 0.7) {
+      particles.push(new Particle(x, y, Math.random() * 15 - 5, Math.random() * 4 - 2, 0.999, 0.999, Math.random() * 20 + 20, 0.99, "#a00", Math.random() * 20 + 15, 0.2));
+    }
     if (completion > Math.pow(0.5, 2)) {
       g.beginPath();
       g.arc(canvas.width-x, y, 35+10*completion, 0, 2*Math.PI);
       g.fillStyle = "#fff";
       g.fill();
+      particles.push(new Particle(canvas.width - x, y, Math.random() * 100 - 50, Math.random() * 100 - 50, 0.9, 0.9, Math.random() * 5 + 2, 0.999, "#fff", 60, 0.2));
     }
   }
   function drawHeal(g, x, y, completion) {
