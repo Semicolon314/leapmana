@@ -6,9 +6,12 @@ var Game = (function() {
     this.playerRight = new Player("RIGHT");
     this.playerLeft.setOpponent(this.playerRight);
     this.playerRight.setOpponent(this.playerLeft);
+    this.interactionBox = null;
   };
 
   Game.prototype.handleFrame = function(frame) {
+    this.interactionBox = frame.interactionBox;
+
     if(frame.hands.length >= 3)
       return;
 
@@ -16,16 +19,16 @@ var Game = (function() {
       frame.hands.sort(function(a, b) {
         return a.palmPosition[0] - b.palmPosition[0];
       });
-      this.playerLeft.gesture.handFrame(frame.hands[0]);
-      this.playerRight.gesture.handFrame(frame.hands[1]);
+      this.playerLeft.handFrame(frame.hands[0]);
+      this.playerRight.handFrame(frame.hands[1]);
     }
 
     if(frame.hands.length === 1) {
       var hand = frame.hands[0];
       if(hand.palmPosition[0] < 0)
-        this.playerLeft.gesture.handFrame(hand);
+        this.playerLeft.handFrame(hand);
       else
-        this.playerRight.gesture.handFrame(hand);
+        this.playerRight.handFrame(hand);
     }
   };
 

@@ -237,6 +237,30 @@ var Renderer = (function() {
       g.font = "24px sans";
       g.fillStyle = "#ff0";
       //g.fillText(str, 20+xofs, 60);
+
+      // Positioning guides
+      if(game.interactionBox !== null) {
+        var ibox = game.interactionBox;
+        var guideWidth = 100;
+        var guideHeight = guideWidth / ibox.width * ibox.height;
+        var guideScale = guideWidth / ibox.width;
+        g.fillStyle = "#888";
+        g.fillRect(5, canvas.height - guideHeight - 5, guideWidth / 2, guideHeight);
+        g.fillRect(canvas.width - guideWidth / 2 - 5, canvas.height - guideHeight - 5, guideWidth / 2, guideHeight);
+        g.fillStyle = "#f00";
+        if(game.playerLeft.handPosition !== null) {
+          var pos = ibox.normalizePoint(game.playerLeft.handPosition);
+          g.beginPath();
+          g.arc(pos[0] * guideWidth + 5, canvas.height - pos[1] * guideHeight - 5, Math.max(1, 5 - pos[2] * 2), 0, Math.PI * 2);
+          g.fill();
+        }
+        if(game.playerRight.handPosition !== null) {
+          var pos = ibox.normalizePoint(game.playerRight.handPosition);
+          g.beginPath();
+          g.arc(canvas.width - guideWidth + pos[0] * guideWidth - 5, canvas.height - pos[1] * guideHeight - 5, Math.max(1, 5 - pos[2] * 2), 0, Math.PI * 2);
+          g.fill();
+        }
+      }
     }
   }
   function resizeCanvas() {

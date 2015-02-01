@@ -39,12 +39,18 @@ var Player = (function() {
     this.augmentSpell = false; // augment next spell?
     this.silenced = 0; //Player's silenced amount, in time
     this.exodiaCount = 0; //Number of times player has casted
+    this.handPosition = null;
     // Spells are in format: {type: "FIREBALL", timestamp: epochtime_number}
   };
 
   Player.prototype.setOpponent = function(opponent) {
     this.opponent = opponent;
   };
+
+  Player.prototype.handFrame = function(hand) {
+    this.gesture.handFrame(hand);
+    this.handPosition = hand.palmPosition;
+  }
 
   // Gets user's gesture history and attempts to transform it into a spell
   Player.prototype.getHistory = function() {

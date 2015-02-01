@@ -104,6 +104,12 @@ var Gesture = (function() {
       }
     }
     if(fA && fB && fC && fD) { // FLIP, PRESS, STOP, SPOCK
+      var dA = Leap.vec3.dist(hand.indexFinger.distal.center(), hand.middleFinger.distal.center());
+      var dB = Leap.vec3.dist(hand.middleFinger.distal.center(), hand.ringFinger.distal.center());
+      var dC = Leap.vec3.dist(hand.ringFinger.medial.center(), hand.pinky.distal.center());
+      if(dA < 25 && dB > 35 && dC < 25) {
+        return "SPOCK";
+      }
       if(hand.palmNormal[1] > 0.2) {
         return "FLIP";
       }
@@ -115,12 +121,6 @@ var Gesture = (function() {
       }
       if(hand.palmPosition[2] < -2.0) {
         return "FIST";
-      }
-      var dA = Leap.vec3.dist(hand.indexFinger.distal.center(), hand.middleFinger.distal.center());
-      var dB = Leap.vec3.dist(hand.middleFinger.distal.center(), hand.ringFinger.distal.center());
-      var dC = Leap.vec3.dist(hand.ringFinger.medial.center(), hand.pinky.distal.center());
-      if(dA < 25 && dB > 35 && dC < 25) {
-        return "SPOCK";
       }
     }
     return "NONE";
