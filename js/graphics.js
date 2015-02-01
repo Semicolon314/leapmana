@@ -4,6 +4,8 @@ var Renderer = (function() {
   var spells = [];
   var particles = [];
   var gestureIcons;
+  var dodgeIcon;
+  var exodiaIcons;
   var gestureIconData = {
     "SPOCK": {row: 0, col: 0},
     "FLIP": {row: 0, col: 1},
@@ -196,7 +198,7 @@ var Renderer = (function() {
         g.arc(particles[i].x, particles[i].y, particles[i].size, 0, 2*Math.PI);
         g.fillStyle = particles[i].col;
         g.fill();
-        i ++;
+        i++;
       }
     }
   }
@@ -218,9 +220,9 @@ var Renderer = (function() {
     g.font = "24px sans";
     for(var i = 0; i < spellList.length; i++) {
       var textWidth = g.measureText(spellList[i].niceName).width;
-      g.fillText(spellList[i].niceName, canvas.width / 2 - 5 - textWidth, i * 35 + 132);
+      g.fillText(spellList[i].niceName, canvas.width / 2 - 5 - textWidth, i * 35 + 182);
       for(var j = 0; j < spellList[i].gesture.length; j++) {
-        drawGestureIcon(g, gestureLetterMap[spellList[i].gesture[j]], Math.floor(canvas.width / 2 + 5 + j * 35), i * 35 + 110, 30);
+        drawGestureIcon(g, gestureLetterMap[spellList[i].gesture[j]], Math.floor(canvas.width / 2 + 5 + j * 35), i * 35 + 160, 30);
       }
     }
     g.fillStyle = "rgba(51, 51, 51, 0.4)";
@@ -291,18 +293,6 @@ var Renderer = (function() {
       }
       // y-coordinate of most spell effects
       var spelly = canvas.height / 2;
-
-      // Log of recent gestures
-      var drawPos = 20 + xofs;
-      p.gestureHistory.forEach (function (gesture, i) {
-        if (i+7 >= p.gestureHistory.length) {
-          drawGestureIcon(g, gesture.type, drawPos, 60, 50);
-          drawPos += 60;
-        }
-      });
-      g.font = "24px sans";
-      g.fillStyle = "#ff0";
-      //g.fillText(str, 20+xofs, 60);
 
       // Spells
       var str = "";
@@ -376,7 +366,7 @@ var Renderer = (function() {
         g.stroke();
       }
       else if (p.defense === "DODGE") {
-        g.fillText("Dodge", 20+xofs, 210);
+        g.drawImage(dodgeIcon, cxofs-40, spelly-40, 80, 80);
       }
       else if (p.defense !== "NONE") {
         g.fillText(p.defense, 20+xofs, 210);
@@ -395,11 +385,16 @@ var Renderer = (function() {
       // Silence
       if (p.isSilenced()) {
         var grd = g.createLinearGradient(xstart, 0, xstart+xdir*0.2, 0);
-        grd.addColorStop(0, "rgba(255, 0, 0, 0.5)");
-        grd.addColorStop(1, "rgba(128, 0, 0, 0)");
+        grd.addColorStop(0, "rgba(0, 0, 0, 0.5)");
+        grd.addColorStop(1, "rgba(0, 0, 0, 0)");
         g.beginPath();
         g.fillStyle = grd;
-        g.fillRect(xstart, 0, xdir*0.2, canvas.height);
+        g.fillRect(xstart, 0, xdir*0.4, canvas.height);
+      }
+
+      // Exodia
+      if (p.exodiaCount > 0) {
+        g.drawImage(exodiaIcons, 0, 0, 261*p.exodiaCount, 375, xofs, 300, 50*p.exodiaCount, 70);
       }
 
       // Log of recent gestures
@@ -449,6 +444,10 @@ var Renderer = (function() {
   function preloadImages() {
     gestureIcons = new Image();
     gestureIcons.src = "images/gestureIcons.svg";
+    dodgeIcon = new Image();
+    dodgeIcon.src = "images/dodge.svg";
+    exodiaIcons = new Image();
+    exodiaIcons.src = "images/exodiaIcons.png";
   }
   function initGraphics(g) {
     // Called when the document is loaded.
