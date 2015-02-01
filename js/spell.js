@@ -5,7 +5,7 @@ var spellList = [
   {gesture: "DAY", name: "SHIELD", niceName: "Shield"},
   {gesture: "BX", name: "SHIELDBREAKER", niceName: "Shield Breaker"},
   {gesture: "BABDZ", name: "FIREBALL", niceName: "Fireball"},
-  {gesture: "DABCX", name: "GREATERSHIELD", niceName: "Greater Shield"},
+  {gesture: "DADCX", name: "GREATERSHIELD", niceName: "Greater Shield"},
   {gesture: "BCZ", name: "POISON", niceName: "Poison"},
   {gesture: "CDEX", name: "HEAL", niceName: "Heal"},
   {gesture: "DX", name: "AUGMENT", niceName: "Augment"},
