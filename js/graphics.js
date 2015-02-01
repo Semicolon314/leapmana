@@ -24,7 +24,7 @@ var Renderer = (function() {
 
   window.addEventListener('resize', resizeCanvas, false);
 
-  function Particle (x, y, vx, vy, ax, ay, size, asize, col, life) {
+  function Particle (x, y, vx, vy, ax, ay, size, asize, col, life, gravity) {
     this.x = x;
     this.y = y;
     this.vx = vx;
@@ -35,6 +35,12 @@ var Renderer = (function() {
     this.asize = asize;
     this.col = col;
     this.life = life;
+    this.gravity = gravity;
+  }
+
+  // Pass "default" for default values
+  function drawParticles(x, y, vx, vy, ax, ay, size, asize, col, life, gravity, density, probability) {
+
   }
 
   function drawFireball(g, x, y) {
@@ -51,12 +57,13 @@ var Renderer = (function() {
     g.fillStyle = "rgba(255, 255, 200, 1.0)";
     g.fill();
     if (Math.random() > 0.8) {
-      particles.push(new Particle(x, y, Math.random() * 60 - 30, Math.random() * 40 - 25, 0.98, 0.98, Math.random() * 20 + 20, 0.95, "#f80", 80));
+      particles.push(new Particle(x, y, Math.random() * 60 - 30, Math.random() * 40 - 25, 0.98, 0.98, Math.random() * 20 + 20, 0.95, "#f80", 80, 0.2));
     }
     if (Math.random() > 0.9) {
-      particles.push(new Particle(x, y, Math.random() * 10 - 5, Math.random() * 20 - 5, 0.98, 0.98, Math.random() * 20 + 20, 0.95, "#888", 80));
+      particles.push(new Particle(x, y, Math.random() * 10 - 5, Math.random() * 20 - 5, 0.98, 0.98, Math.random() * 20 + 20, 0.95, "#888", 80, 0.2));
     }
   }
+
   function drawPyroblast(g, x, y) {
     // Draw a huge red circle
     g.beginPath();
@@ -72,10 +79,10 @@ var Renderer = (function() {
     g.fillStyle = "#fa3";
     g.fill();
     if (Math.random() > 0.8) {
-      particles.push(new Particle(x, y, Math.random() * 60 - 30, Math.random() * 40 - 25, 0.98, 0.98, Math.random() * 20 + 20, 0.95, "#f80", 80));
+      particles.push(new Particle(x, x + Math.random() * 360 - 18, Math.random() * 60 - 30, 0, 0.98, 0.98, Math.random() * 20 + 20, 0.95, "#f80", 80, 0));
     }
     if (Math.random() > 0.9) {
-      particles.push(new Particle(x, y, Math.random() * 10 - 5, Math.random() * 20 - 5, 0.98, 0.98, Math.random() * 20 + 20, 0.95, "#888", 80));
+      particles.push(new Particle(x, x + Math.random() * 360 - 18, Math.random() * 4 - 2, 0, 0.98, 0.98, Math.random() * 20 + 20, 0.95, "#888", 80, 0));
     }
   }
   function drawMagicMissile(g, x, y) {
@@ -93,7 +100,7 @@ var Renderer = (function() {
     g.fill();
     //Particles
     if (Math.random() > 0.5) {
-      particles.push(new Particle(x, y, Math.random() * 10 - 5, Math.random() * 6 - 2, 0.9, 0.9, Math.random() * 20, 0.95, "#68a", 80));
+      particles.push(new Particle(x, y, Math.random() * 10 - 5, Math.random() * 6 - 2, 0.9, 0.9, Math.random() * 20, 0.95, "#68a", 80, 0.2));
     }
   }
   function drawPoison(g, x, y) {
@@ -102,7 +109,7 @@ var Renderer = (function() {
     g.fillStyle = "rgba(51, 204, 34, 0.6)";
     g.fill();
     if (Math.random() > 0.7) {
-      particles.push(new Particle(x, y, Math.random() * 30 - 15, Math.random() * 8 - 2, 0.9, 0.9, Math.random() * 20 + 20, 0.99, "rgba(51, 204, 34, 0.4)", Math.random() * 40 + 15));
+      particles.push(new Particle(x, y, Math.random() * 30 - 15, Math.random() * 8 - 2, 0.9, 0.9, Math.random() * 20 + 20, 0.99, "rgba(51, 204, 34, 0.4)", Math.random() * 40 + 15, 0.2));
     }
   }
   function drawShieldBreaker(g, x, y) {
@@ -110,12 +117,15 @@ var Renderer = (function() {
     g.arc(x, y, 65, 0, 2*Math.PI);
     g.fillStyle = "rgba(128, 128, 128, 1.0)";
     g.fill();
+    for (var i = 0; i < 25; i++)
+       particles.push(new Particle(x, y + Math.random() * 65 - 32.5, Math.random() * 30 - 15, Math.random() * 8 - 2, 0.9, 0.9, Math.random() * 5, 0.99, "rgba(128, 128, 128, 1.0)", 7 + Math.random() * 3, 0));
   }
   function drawVampiricBlast(g, x, y, completion) {
     g.beginPath();
     g.arc(x, y, 65-20*completion, 0, 2*Math.PI);
     g.fillStyle = "#a00";
     g.fill();
+
     if (completion > Math.pow(0.5, 2)) {
       g.beginPath();
       g.arc(canvas.width-x, y, 35+10*completion, 0, 2*Math.PI);
@@ -180,7 +190,6 @@ var Renderer = (function() {
     for (var i = 0; i < particles.length;) {
       //Decay life, size and opacity
       particles[i].life --;
-      console.log(particles[i].life);
       if (particles[i].life < 0 || particles[i].size < 1) {
         particles.splice(i, 1);
       }
@@ -188,8 +197,7 @@ var Renderer = (function() {
         particles[i].x += particles[i].vx;
         particles[i].y += particles[i].vy;
         particles[i].vx *= particles[i].ax;
-        particles[i].vy *= particles[i].ax;
-        particles[i].vy += 0.2; // Gravity
+        particles[i].vy = particles[i].vy * particles[i].ax + particles[i].gravity;
         particles[i].size *= particles[i].asize;
         // Draw the thing
         g.beginPath();
