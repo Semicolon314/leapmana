@@ -101,8 +101,8 @@ var Renderer = (function() {
     g.arc(x, y, 65, 0, 2*Math.PI);
     g.fillStyle = "rgba(51, 204, 34, 0.6)";
     g.fill();
-    if (Math.random() > 0.8) {
-      particles.push(new Particle(x, y, Math.random() * 30 - 15, Math.random() * 8 - 2, 0.9, 0.9, Math.random() * 20 + 20, 0.99, "rgba(51, 204, 34, 0.4)", 80));
+    if (Math.random() > 0.7) {
+      particles.push(new Particle(x, y, Math.random() * 30 - 15, Math.random() * 8 - 2, 0.9, 0.9, Math.random() * 20 + 20, 0.99, "rgba(51, 204, 34, 0.4)", Math.random() * 40 + 15));
     }
   }
   function drawShieldBreaker(g, x, y) {
@@ -276,8 +276,12 @@ var Renderer = (function() {
 
       // If player 2, offset by half the canvas width.
       var xofs = (pid * canvas.width / 2 + 30);
-      // for shields
+      // shields farthest point
       var cxofs = (pid * 2*canvas.width/3)+canvas.width/6
+      // shield radius
+      var shield_radius = canvas.height/2;
+      // shield center
+      var shield_center = cxofs + (pid*2-1)*shield_radius;
       // x-coord that spell effects start at
       var xstart = canvas.width/2 + canvas.width/2*1.1*(pid*2-1);
       // Total x-movement of spell effects
@@ -305,9 +309,9 @@ var Renderer = (function() {
       p.spellHistory.forEach (function (spell, i) {
         drawSpell(g, xstart, xdir, spelly, spell);
 
-        if (timeDelta < 500) {
-          str += spell.type + " ";
-        }
+        //if (timeDelta < 500) {
+        //  str += spell.type + " ";
+        //}
       });
       g.font = "24px sans";
       g.fillStyle = "#ff0";
@@ -315,29 +319,64 @@ var Renderer = (function() {
 
       // Defense
       if (p.defense === "SHIELD") {
+        var grd = g.createLinearGradient(xstart, 0, cxofs, 0);
+        grd.addColorStop(0.5, "rgba(255, 255, 255, 0)");
+        grd.addColorStop(1, "rgba(255, 255, 255, 1)");
+
         g.beginPath();
-        g.fillStyle = "#ff0";
-        g.fillRect(cxofs-10.5, spelly-50.5, 20, 100);
+        g.arc(shield_center, spelly, shield_radius, 0, 2*Math.PI);
+        g.strokeStyle = grd;
+        g.lineWidth = 8;
+        g.stroke();
       }
       else if (p.defense === "GREATERSHIELD") {
+        var grd = g.createLinearGradient(xstart, 0, cxofs, 0);
+        grd.addColorStop(0, "rgba(255, 255, 255, 0)");
+        grd.addColorStop(1, "rgba(255, 255, 255, 1)");
+
         g.beginPath();
-        g.fillStyle = "#ff0";
-        g.fillRect(cxofs-20.5, spelly-100.5, 40, 200);
+        g.arc(shield_center, spelly, shield_radius, 0, 2*Math.PI);
+        g.strokeStyle = grd;
+        g.lineWidth = 20;
+        g.stroke();
       }
       else if (p.defense === "GREATERSHIELDBROKEN") {
+        var grd = g.createLinearGradient(xstart, 0, cxofs, 0);
+        grd.addColorStop(0.5, "rgba(255, 255, 255, 0)");
+        grd.addColorStop(1, "rgba(255, 255, 255, 1)");
+
         g.beginPath();
-        g.fillStyle = "#ff0";
-        g.fillRect(cxofs-20.5, spelly-60.5, 40, 120);
+        g.arc(shield_center, spelly, shield_radius, 0, 2*Math.PI);
+        g.strokeStyle = grd;
+        g.lineWidth = 20;
+        g.stroke();
       }
       else if (p.defense === "COUNTERSPELL") {
+        var grd = g.createLinearGradient(xstart, 0, cxofs, 0);
+        grd.addColorStop(0.5, "rgba(255, 255, 255, 0)");
+        grd.addColorStop(1, "rgba(255, 128, 0, 1)");
+
         g.beginPath();
-        g.fillStyle = "#08f";
-        g.fillRect(cxofs-10.5, spelly-50.5, 20, 100);
+        g.arc(shield_center, spelly, shield_radius, 0, 2*Math.PI);
+        g.strokeStyle = grd;
+        g.lineWidth = 8;
+        g.stroke();
       }
       else if (p.defense === "MIRROR") {
+        var grd = g.createLinearGradient(xstart, 0, cxofs, 0);
+        grd.addColorStop(0.5, "rgba(0, 128, 255, 0)");
+        grd.addColorStop(0.8, "rgba(255, 255, 255, 1)");
+        grd.addColorStop(0.93, "rgba(0, 128, 255, 1)");
+        grd.addColorStop(1, "rgba(255, 255, 255, 1)");
+
         g.beginPath();
-        g.fillStyle = "#fff";
-        g.fillRect(cxofs-10.5, spelly-50.5, 20, 100);
+        g.arc(shield_center, spelly, shield_radius, 0, 2*Math.PI);
+        g.strokeStyle = grd;
+        g.lineWidth = 8;
+        g.stroke();
+      }
+      else if (p.defense === "DODGE") {
+        g.fillText("Dodge", 20+xofs, 210);
       }
       else if (p.defense !== "NONE") {
         g.fillText(p.defense, 20+xofs, 210);
@@ -345,6 +384,16 @@ var Renderer = (function() {
 
       // Augment
       if (p.augmentSpell) {
+        var grd = g.createLinearGradient(xstart, 0, xstart+xdir*0.2, 0);
+        grd.addColorStop(0, "rgba(255, 0, 0, 0.5)");
+        grd.addColorStop(1, "rgba(128, 0, 0, 0)");
+        g.beginPath();
+        g.fillStyle = grd;
+        g.fillRect(xstart, 0, xdir*0.2, canvas.height);
+      }
+
+      // Silence
+      if (p.isSilenced()) {
         var grd = g.createLinearGradient(xstart, 0, xstart+xdir*0.2, 0);
         grd.addColorStop(0, "rgba(255, 0, 0, 0.5)");
         grd.addColorStop(1, "rgba(128, 0, 0, 0)");

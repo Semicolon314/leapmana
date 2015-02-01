@@ -12,7 +12,7 @@ var Player = (function() {
     this.health = MAX_HEALTH;
     this.gesture = new Gesture(function(g) {
       console.log(g);
-      if(new Date().getTime() - _this.silenced > 2000) {
+      if (!_this.isSilenced()) {
         if (_this.gestureHistory.length > 0) {
           clearTimeout(_this.gestureHistoryClearTimeout);
           // Clear the history if the user gestures *after*
@@ -42,6 +42,10 @@ var Player = (function() {
     this.handPosition = null;
     // Spells are in format: {type: "FIREBALL", timestamp: epochtime_number}
   };
+
+  Player.prototype.isSilenced = function() {
+    return (new Date().getTime() - this.silenced <= 2000)
+  }
 
   Player.prototype.setOpponent = function(opponent) {
     this.opponent = opponent;
