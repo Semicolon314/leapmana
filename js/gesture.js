@@ -16,7 +16,7 @@ var Gesture = (function() {
     "POINT": 6,
     "DOUBLE": 6,
     "FLIP": 5,
-    "SPOCK": 10,
+    "SPOCK": 6,
     "PRESS": 3,
     "STOP": 3
   };
@@ -73,7 +73,7 @@ var Gesture = (function() {
     if(hand.confidence < 0.3)
       return; // too bad
 
-    this.positionHistory.push(hand.palmPosition);
+    /*this.positionHistory.push(hand.palmPosition);
     if(this.positionHistory.length > 200) {
       this.positionHistory.shift();
     }
@@ -81,7 +81,7 @@ var Gesture = (function() {
       return [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
     }).map(function(a) {
       return a / _this.positionHistory.length;
-    });
+    });*/
     var heightDistance = hand.middleFinger.distal.center()[1] - hand.arm.nextJoint[1];
 
     var fA = hand.indexFinger.extended;
@@ -90,14 +90,10 @@ var Gesture = (function() {
     var fD = hand.ringFinger.extended;
     var thumbDist = Leap.vec3.dist(hand.thumb.distal.center(), hand.indexFinger.proximal.center());
 
-    //$("#curGesture").html(fA + "\t" + fB + "\t" + fC + "\t" + fD + "\t" + thumbDist);
+    //$("#curGesture").html(fA + "\t" + fB + "\t" + fC + "\t" + fD + "\t" + heightDistance);
 
-    if(!fA && !fB && !fC && !fD) { // FIST and THUMB
-      if(thumbDist > 45) {
-        return "THUMB";
-      } else if(thumbDist < 35) {
-        return "FIST";
-      }
+    if(!fA && !fB && !fC && !fD && thumbDist > 25) { // FIST and THUMB
+      return "THUMB";
     }
     var pointPoints = 0;
     if(fA && !fC && !fD) { // POINT and DOUBLE
@@ -111,21 +107,14 @@ var Gesture = (function() {
       if(hand.palmNormal[1] > 0.2) {
         return "FLIP";
       }
-      var pressPoints = 0;
-      if(heightDistance < 0) {
-        pressPoints += heightDistance / -35;
-      }
-      pressPoints += Math.max(-0.5, (hand.palmPosition[1] - averagePosition[1]) / -40);
-      if(pressPoints > 1.0) {
+      if(heightDistance < -60) {
         return "PRESS";
       }
-      var stopPoints = 0;
-      if(heightDistance > 0) {
-        stopPoints += heightDistance / 35;
-      }
-      stopPoints += Math.min(0.5, (hand.palmPosition[1] - averagePosition[1]) / 40);
-      if(stopPoints > 1.0) {
+      if(heightDistance > 70) {
         return "STOP";
+      }
+      if(hand.palmPosition[2] < -2.0) {
+        return "FIST";
       }
       var dA = Leap.vec3.dist(hand.indexFinger.distal.center(), hand.middleFinger.distal.center());
       var dB = Leap.vec3.dist(hand.middleFinger.distal.center(), hand.ringFinger.distal.center());

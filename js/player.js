@@ -1,5 +1,5 @@
 var MAX_HEALTH = 20;
-var DOT_FRAMES = 50; // how many frames between DoT ticks
+var DOT_FRAMES = 75; // how many frames between DoT ticks
 
 var Player = (function() {
   var Player = function(position) {
@@ -106,7 +106,7 @@ var Player = (function() {
       };
       spellOffensive = true;
     } else if (spell === "POISON") {
-      spellDamageOverTime = 4;
+      spellDamageOverTime = 5;
       spellOffensive = true;
       spellDelay = 500;
     } else if (spell === "DYNAMITE") {
