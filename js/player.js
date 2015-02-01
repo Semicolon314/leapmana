@@ -195,6 +195,8 @@ var Player = (function() {
         }
       }
     }, spellDelay);
+    this.frameUpdate();
+    this.opponent.frameUpdate();
   };
 
   Player.prototype.frameUpdate = function() {
@@ -205,6 +207,9 @@ var Player = (function() {
         this.damageOverTime --;
         this.damageOverTimeFrame = DOT_FRAMES;
       }
+    }
+    if (this.health < 0 && this.health > -1000) {
+      this.health = 0;
     }
   }
 
